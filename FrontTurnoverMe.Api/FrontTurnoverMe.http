@@ -1,0 +1,6 @@
+@FrontTurnoverMe_HostAddress = http://localhost:5042
+
+GET {{FrontTurnoverMe_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
