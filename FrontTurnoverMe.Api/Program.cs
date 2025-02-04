@@ -97,8 +97,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapIdentityApi<IdentityUser>()
-            .WithTags("Authentication");
+        app.AddIdentityEndpoints();
         app.MapInvoiceEndpoints();
 
         app.Run();
