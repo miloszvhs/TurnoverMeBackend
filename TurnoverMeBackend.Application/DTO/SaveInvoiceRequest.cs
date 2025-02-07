@@ -5,17 +5,19 @@ namespace TurnoverMeBackend.Application.DTO;
 
 public class SaveInvoiceRequest : IValidatableObject
 {
-    public DateTime IssueDate { get; set; } // Data wystawienia
-    public string? InvoiceNumber { get; set; } // Kolejny numer faktury
-    public InvoiceRequestSeller Seller { get; set; } // Dane sprzedawcy
-    public InvoiceRequestBuyer Buyer { get; set; } // Dane nabywcy
-    public InvoiceRequestReceiver? Receiver { get; set; } // Dane odbiorcy
-    public DateTime? DeliveryDate { get; set; } // Data dostawy lub wykonania usługi
-    public List<InvoiceRequestItem> Items { get; set; } = []; // Pozycje faktury
-    public decimal TotalNetAmount { get; set; } // Suma wartości sprzedaży netto
-    public decimal TotalTaxAmount { get; set; } // Kwota podatku VAT
-    public decimal TotalAmountDue { get; set; } // Kwota należności ogółem
-   
+    public DateTime IssueDate { get; set; }
+    public string? InvoiceNumber { get; set; }
+    public InvoiceRequestSeller Seller { get; set; }
+    public InvoiceRequestBuyer Buyer { get; set; }
+    public InvoiceRequestReceiver? Receiver { get; set; }
+    public DateTime? DeliveryDate { get; set; }
+    public List<InvoiceRequestItem> Items { get; set; } = [];
+    public decimal TotalNetAmount { get; set; }
+    public decimal TotalTaxAmount { get; set; }
+    public decimal TotalGrossAmount { get; set; }
+    public string Currency { get; set; }
+    public string Remarks { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         ValidatorHelper.Validate(Seller);
@@ -30,25 +32,19 @@ public class SaveInvoiceRequest : IValidatableObject
         if (TotalNetAmount <= 0)
             yield return new ValidationResult("Total net amount must be greater than 0", [nameof(TotalNetAmount)]);
         
-        if (TotalTaxAmount <= 0)
-            yield return new ValidationResult("Total tax amount must be greater than 0", [nameof(TotalTaxAmount)]);
-        
-        if (TotalAmountDue <= 0)
-            yield return new ValidationResult("Total amount due must be greater than 0", [nameof(TotalAmountDue)]);
+        if (TotalGrossAmount <= 0)
+            yield return new ValidationResult("Total gross amount must be greater than 0", [nameof(TotalGrossAmount)]);
         
         if (IssueDate == default)
             yield return new ValidationResult("Issue date is required", [nameof(IssueDate)]);
-        
-        if (InvoiceNumber != null && string.IsNullOrEmpty(InvoiceNumber))
-            yield return new ValidationResult("Invoice number is required", [nameof(InvoiceNumber)]);
     }
 }
 
 public class InvoiceRequestSeller : IValidatableObject
 {
-    public string Name { get; set; } // Nazwa sprzedawcy
+    public string Name { get; set; }
     public InvoiceRequestAddress Address { get; set; }
-    public TaxNumber TaxNumber { get; set; }
+    public TaxNumberDto TaxNumber { get; set; }
     
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -65,9 +61,9 @@ public class InvoiceRequestSeller : IValidatableObject
 
 public class InvoiceRequestBuyer : IValidatableObject
 {
-    public string Name { get; set; } // Nazwa nabywcy
+    public string Name { get; set; } 
     public InvoiceRequestAddress Address { get; set; }
-    public TaxNumber TaxNumber { get; set; }
+    public TaxNumberDto TaxNumber { get; set; }
     
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -83,9 +79,9 @@ public class InvoiceRequestBuyer : IValidatableObject
 
 public class InvoiceRequestReceiver : IValidatableObject
 {
-    public string Name { get; set; } // Nazwa odbiorcy
+    public string Name { get; set; }
     public InvoiceRequestAddress Address { get; set; }
-    public TaxNumber? TaxNumber { get; set; }
+    public TaxNumberDto? TaxNumber { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -122,19 +118,19 @@ public class InvoiceRequestAddress
     public string Country { get; set; }
 }
 
-public class TaxNumber
+public class TaxNumberDto
 {
-    public string Prefix { get; set; }
-    public string Value { get; set; }
+    public string TaxPrefix { get; set; }
+    public string TaxNumber { get; set; }
     
     public bool IsValid()
     {
-        if (string.IsNullOrEmpty(Value) || string.IsNullOrEmpty(Prefix)) return false;
+        if (string.IsNullOrEmpty(TaxNumber) || string.IsNullOrEmpty(TaxPrefix)) return false;
         
-        if (Prefix.Equals("PL", StringComparison.OrdinalIgnoreCase))
-            return ValidatePolishNIP(Value);
+        if (TaxPrefix.Equals("PL", StringComparison.OrdinalIgnoreCase))
+            return ValidatePolishNIP(TaxNumber);
         else
-            return ValidateForeignTaxNumber(Value);
+            return ValidateForeignTaxNumber(TaxNumber);
     }
     
     private bool ValidatePolishNIP(string nip)

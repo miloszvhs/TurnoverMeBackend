@@ -23,13 +23,19 @@ public class InvoiceRepository(InvoicesDbContext context) : IInvoiceRepository
 
     public List<Invoice> GetAll()
     {
-        return _invoices.ToList();
+        return _invoices
+            .Include(x => x.Buyer)
+            .Include(x => x.Seller)
+            .Include(x => x.Items)
+            .Include(x => x.Circuits)
+            .Include(x => x.Receiver)
+            .ToList();
     }
 
     public List<Invoice> GetForUser(string userGuid)
     {
         return _invoices
-            .Where(x => x.Id == userGuid)
+           // .Where(x => x.UserId == userGuid) TODO
             .ToList();
     }
 

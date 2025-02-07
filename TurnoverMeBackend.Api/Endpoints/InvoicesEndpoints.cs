@@ -11,10 +11,8 @@ public static class InvoicesEndpoints
 {
     public static WebApplication MapInvoiceEndpoints(this WebApplication app)
     {
-        app.AddAdminEndpoints();
-        
         var group = app.MapGroup("invoices")
-            .WithTags("Invoices")
+            .WithTags("invoices")
             .RequireAuthorization();
 
         group.MapPost("/commit",
@@ -25,6 +23,9 @@ public static class InvoicesEndpoints
 
         group.MapGet("/invoices/user", (ClaimsPrincipal user, IQueryHandler<GetInvoicesForUser, InvoiceDto[]> getInvoicesHandler) 
             => getInvoicesHandler.Handle(new GetInvoicesForUser(user.Identity.Name)));
+        
+        group.MapGet("/invoices", (IQueryHandler<GetInvoices, InvoiceDto[]> getInvoicesHandler)
+            => getInvoicesHandler.Handle(new GetInvoices()));
         
         return app;
     }

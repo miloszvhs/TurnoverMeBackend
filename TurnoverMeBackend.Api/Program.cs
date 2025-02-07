@@ -97,6 +97,8 @@ public class Program
 
         app.AddIdentityEndpoints();
         app.MapInvoiceEndpoints();
+        app.AddChambersEndpoints();
+        app.AddAdminEndpoints();
 
         app.Run();
     }

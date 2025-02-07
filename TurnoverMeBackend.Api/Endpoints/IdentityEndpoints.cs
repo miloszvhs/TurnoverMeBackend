@@ -19,7 +19,7 @@ public static class IdentityEndpoints
     {
         app.MapGroup("account")
             .MapCustomIdentityApi<IdentityUser, IdentityRole>()
-            .WithTags("Authentication");
+            .WithTags("authentication");
         return app;
     }
 }

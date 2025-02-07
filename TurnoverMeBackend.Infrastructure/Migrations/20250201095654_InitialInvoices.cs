@@ -22,7 +22,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     TotalNetAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     TotalTaxAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     TotalAmountDue = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false)
+                    Currency = table.Column<string>(type: "text", maxLength: 3, nullable: false)
                 },
                 constraints: table =>
                 {

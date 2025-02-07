@@ -4,41 +4,71 @@ namespace TurnoverMeBackend.Application.DTO;
 
 public class InvoiceDto
 {
-    public int Id { get; set; }
-    public string Number { get; set; }
-    public string Currency { get; set; } = "PLN";
-    public int? PaidPrice { get; set; }
-    public string Notes { get; set; }
-    public string Kind { get; set; }
-    public string PaymentMethod { get; set; }
-    public bool? SplitPayment { get; set; }
-    public string SplitPaymentType { get; set; }
-    public string RecipientSignature { get; set; }
-    public string SellerSignature { get; set; }
-    public DateTime InvoiceDate { get; set; }
-    public DateTime SaleDate { get; set; }
-    public InvoiceStatusEnumDto Status { get; set; }
-    public DateTime PaymentDate { get; set; }
-    public DateTime PaidDate { get; set; }
-    public int? NetPrice { get; set; }
-    public int? TaxPrice { get; set; }
-    public int? GrossPrice { get; set; }
-    public int? LeftToPay { get; set; }
-    public int? ClientId { get; set; }
-    public string ClientCompanyName { get; set; }
-    public string ClientFirstName { get; set; }
-    public string ClientLastName { get; set; }
-    public string ClientBusinessActivityKind { get; set; }
-    public string ClientStreet { get; set; }
-    public string ClientStreetNumber { get; set; }
-    public string ClientFlatNumber { get; set; }
-    public string ClientCity { get; set; }
-    public string ClientPostCode { get; set; }
-    public string ClientTaxCode { get; set; }
-    public string CleanClientNip { get; set; }
-    public string ClientCountry { get; set; }
-    public string BankName { get; set; }
-    public string BankAccount { get; set; }
-    public string Swift { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public string InvoiceNumber { get; set; }
+    public DateTime IssueDate { get; set; }
+    public InvoiceSellerDto Seller { get; set; }
+    public InvoiceBuyerDto Buyer { get; set; }
+    public InvoiceReceiverDto? Receiver { get; set; }
+    public DateTime? DeliveryDate { get; set; }
+    public IList<InvoicePositionItemDto> Items { get; set; }
+    public IList<InvoiceCircuitDto> Circuits { get; set; }
+    public decimal TotalNetAmount { get; set; }
+    public decimal TotalTaxAmount { get; set; }
+    public decimal TotalGrossAmount { get; set; }
+    public string Currency { get; set; }
+    public string? Remarks { get; set; }
+    
+    public class InvoiceSellerDto
+    {
+        public string Name { get; set; }
+        public AddressDto Address { get; set; }
+        public TaxNumberDto TaxNumberDto { get; set; }
+    }
+    
+    public class InvoiceBuyerDto
+    {
+        public string Name { get; set; }
+        public AddressDto Address { get; set; }
+        public TaxNumberDto TaxNumberDto { get; set; }
+    }
+    
+    public class InvoiceReceiverDto
+    {
+        public string Name { get; set; }
+        public AddressDto Address { get; set; }
+        public TaxNumberDto? TaxNumberDto { get; set; }
+    }
+    
+    public class AddressDto
+    {
+        public string Street { get; set; }
+        public string StreetNumber { get; set; }
+        public string FlatNumber { get; set; }
+        public string City { get; set; }
+        public string PostCode { get; set; }
+        public string Country { get; set; }
+    }
+    
+    public class InvoicePositionItemDto
+    {
+        public string Name { get; set; }
+        public string Unit { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal UnitNetPrice { get; set; }
+        public decimal Discount { get; set; }
+        public decimal NetValue { get; set; }
+        public decimal TaxRate { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal GrossValue { get; set; }
+    }
+    
+    public class InvoiceCircuitDto
+    {
+        public string From { get; set; }
+        public string To { get; set; }
+        public DateTime IssueDate { get; set; }
+        public string Stage { get; set; }
+        public string Note { get; set; }
+    }
 }
+

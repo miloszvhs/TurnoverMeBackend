@@ -19,13 +19,14 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
 
     private Invoice ProcessRequest(SaveInvoiceRequest invoice)
     {
-        var newInvoice = new Invoice();
+        var newInvoice = new Invoice
+        {
+            InvoiceNumber = string.IsNullOrWhiteSpace(invoice.InvoiceNumber)
+                ? invoiceNumberGenerationService.GenerateInvoiceNumber("FV") 
+                : invoice.InvoiceNumber,
+            Remarks = invoice.Remarks
+        };
 
-        if(invoice.InvoiceNumber is null)
-            invoice.InvoiceNumber = invoiceNumberGenerationService.GenerateInvoiceNumber("FV");
-        else
-            newInvoice.InvoiceNumber = invoice.InvoiceNumber;
-        
         MapBuyer();
         MapSeller();
         MapReceiver();
@@ -41,7 +42,7 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             newInvoice.Buyer = new InvoiceBuyer()
             {
                 Name = invoice.Buyer.Name,
-                TaxNumber = "1234567890",
+                TaxNumber = invoice.Buyer.TaxNumber.TaxNumber,
                 AddressValueObject = new InvoiceAddressValueObject()
                 {
                     City = invoice.Buyer.Address.City,
@@ -59,7 +60,7 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             newInvoice.Seller = new InvoiceSeller()
             {
                 Name = invoice.Seller.Name,
-                TaxNumber = "0987654321",
+                TaxNumber = invoice.Seller.TaxNumber.TaxNumber,
                 AddressValueObject = new InvoiceAddressValueObject()
                 {
                     City = invoice.Seller.Address.City,
@@ -80,7 +81,7 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             newInvoice.Receiver = new InvoiceReceiver()
             {
                 Name = invoice.Receiver.Name,
-                TaxNumber = "0987654321",
+                TaxNumber = invoice.Receiver.TaxNumber.TaxNumber,
                 AddressValueObject = new InvoiceAddressValueObject()
                 {
                     City = invoice.Receiver.Address.City,
@@ -111,10 +112,10 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
 
         void MapTaxes()
         {
-            newInvoice.TotalNetAmount = invoice.Items.Sum(x => x.NetValue);
-            newInvoice.TotalTaxAmount = invoice.Items.Sum(x => x.TaxAmount);
-            newInvoice.TotalAmountDue = invoice.Items.Sum(x => x.GrossValue);
-            newInvoice.Currency = "PLN";
+            newInvoice.TotalNetAmount = invoice.TotalNetAmount;
+            newInvoice.TotalTaxAmount = invoice.TotalTaxAmount;
+            newInvoice.TotalGrossAmount = invoice.TotalGrossAmount;
+            newInvoice.Currency = invoice.Currency;
         }
         
         void MapPayment()

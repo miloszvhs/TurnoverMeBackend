@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TurnoverMeBackend.Application.Abstractions;
 using TurnoverMeBackend.Application.DTO;
+using TurnoverMeBackend.Application.Helpers;
 using TurnoverMeBackend.Application.Interfaces;
 using TurnoverMeBackend.Application.Queries;
 using TurnoverMeBackend.Domain.Entities.Invoices;
@@ -16,18 +17,10 @@ public class GetInvoicesForUserHandler(IInvoiceRepository invoiceRepository,
         InvoiceDto[] invoices;
         invoices = invoiceRepository
             .GetForUser(query.User)
-            .Select(MapFromDto)
+            .Select(InvoiceDtoHelper.MapToDto)
             .ToArray();
          
         return invoices;
     }
 
-    private InvoiceDto MapFromDto(Invoice arg)
-    {
-        return new InvoiceDto
-        {
-            Number = arg.InvoiceNumber,
-            Currency = arg.Currency,
-        };
-    }
 }

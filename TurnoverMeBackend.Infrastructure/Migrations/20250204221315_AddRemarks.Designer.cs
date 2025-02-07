@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TurnoverMeBackend.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(InvoicesDbContext))]
-    partial class InvoicesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250204221315_AddRemarks")]
+    partial class AddRemarks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,8 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
 
                     b.Property<DateTime?>("DeliveryDate")
                         .IsRequired()
@@ -67,6 +71,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Remarks")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("TotalGrossAmount")
@@ -106,41 +111,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("InvoiceBuyer");
-                });
-
-            modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.InvoiceCircuit", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("From")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("InvoiceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Stage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("To")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.ToTable("InvoiceCircuit");
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.InvoicePositionItem", b =>
@@ -242,7 +212,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
                         .WithOne("Buyer")
                         .HasForeignKey("TurnoverMeBackend.Domain.Entities.Invoices.InvoiceBuyer", "InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("TurnoverMeBackend.Domain.Entities.ValueObjects.InvoiceAddressValueObject", "AddressValueObject", b1 =>
@@ -292,15 +262,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.InvoiceCircuit", b =>
-                {
-                    b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
-                        .WithMany("Circuits")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.InvoicePositionItem", b =>
                 {
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
@@ -315,7 +276,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
                         .WithOne("Receiver")
                         .HasForeignKey("TurnoverMeBackend.Domain.Entities.Invoices.InvoiceReceiver", "InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("TurnoverMeBackend.Domain.Entities.ValueObjects.InvoiceAddressValueObject", "AddressValueObject", b1 =>
@@ -370,7 +331,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
                         .WithOne("Seller")
                         .HasForeignKey("TurnoverMeBackend.Domain.Entities.Invoices.InvoiceSeller", "InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("TurnoverMeBackend.Domain.Entities.ValueObjects.InvoiceAddressValueObject", "AddressValueObject", b1 =>
@@ -424,8 +385,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                 {
                     b.Navigation("Buyer")
                         .IsRequired();
-
-                    b.Navigation("Circuits");
 
                     b.Navigation("Items");
 

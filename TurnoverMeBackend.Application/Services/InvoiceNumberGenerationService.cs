@@ -18,8 +18,9 @@ public class InvoiceNumberGenerationService(IInvoiceNumberRepository invoiceNumb
         var invoiceNumber = invoiceNumberRepository.GetLastInvoiceNumber(type);
         invoiceNumber ??= new InvoiceNumber() { Type = type, Number = 0, Refresh = RefreshEnum.Yearly};
 
-        var generatedInvoiceNumber = GenerateNextNumber(type, invoiceNumber.Number);
         invoiceNumber.Number++;        
+        var generatedInvoiceNumber = GenerateNextNumber(type, invoiceNumber.Number);
+        invoiceNumber.LastUpdate = DateTime.Now;
         invoiceNumberRepository.SaveOrUpdate(invoiceNumber);
         return generatedInvoiceNumber;
     }
@@ -30,7 +31,7 @@ public class InvoiceNumberGenerationService(IInvoiceNumberRepository invoiceNumb
         {
             case "FV":
                 return InvoicePattern
-                    .Replace("<number>", number.ToString().PadRight(6, '0'))
+                    .Replace("<number>", number.ToString().PadLeft(6, '0'))
                     .Replace("<year>", DateTime.Now.Year.ToString());
             default:
                 throw new NotImplementedException();
