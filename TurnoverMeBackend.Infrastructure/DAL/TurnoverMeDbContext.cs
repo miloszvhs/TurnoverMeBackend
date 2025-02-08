@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TurnoverMeBackend.Domain.Entities;
 
 namespace TurnoverMeBackend.Infrastructure.DAL;
 
@@ -22,7 +23,7 @@ public class TurnoverMeDbContext : IdentityDbContext
         modelBuilder.Entity<IdentityRole>()
             .HasData(roles);
 
-        var user = new IdentityUser
+        var user = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "admin",
@@ -32,10 +33,10 @@ public class TurnoverMeDbContext : IdentityDbContext
             ConcurrencyStamp = Guid.NewGuid().ToString()
         };
         
-        var passwordHasher = new PasswordHasher<IdentityUser>();
+        var passwordHasher = new PasswordHasher<ApplicationUser>();
         user.PasswordHash = passwordHasher.HashPassword(user, "admin");
         
-        modelBuilder.Entity<IdentityUser>()
+        modelBuilder.Entity<ApplicationUser>()
             .HasData(user);
         
         modelBuilder.Entity<IdentityUserRole<string>>()

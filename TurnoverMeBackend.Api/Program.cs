@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using TurnoverMeBackend.Domain.Entities;
 
 namespace TurnoverMeBackend.Api;
 
@@ -67,7 +68,7 @@ public class Program
             opt.UseNpgsql(dbConfig.DatabaseConnectionString);        
         });
 
-        builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+        builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<TurnoverMeDbContext>();
 

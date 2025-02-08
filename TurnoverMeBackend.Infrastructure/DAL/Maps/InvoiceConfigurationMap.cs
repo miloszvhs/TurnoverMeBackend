@@ -11,11 +11,15 @@ public class InvoiceConfigurationMap : IEntityTypeConfiguration<Invoice>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.InvoiceNumber).IsRequired();
         builder.Property(x => x.IssueDate).IsRequired();
-        builder.Property(x => x.DeliveryDate).IsRequired();
+        builder.Property(x => x.CreationTime).IsRequired();
         builder.Property(x => x.TotalNetAmount).IsRequired().HasColumnType("decimal(18,2)");
         builder.Property(x => x.TotalTaxAmount).IsRequired().HasColumnType("decimal(18,2)");
         builder.Property(x => x.TotalGrossAmount).IsRequired().HasColumnType("decimal(18,2)");
         builder.Property(x => x.Currency).IsRequired();
+        builder.Property(x => x.Remarks);
+        builder.Property(x => x.Status)
+            .IsRequired()
+            .HasConversion<string>();
 
         builder.HasOne(x => x.Seller)
             .WithOne()

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TurnoverMeBackend.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations.TurnoverMeDb
 {
     [DbContext(typeof(TurnoverMeDbContext))]
-    partial class TurnoverMeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207230400_UserUpdate")]
+    partial class UserUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,13 +53,13 @@ namespace TurnoverMeBackend.Infrastructure.Migrations.TurnoverMeDb
                     b.HasData(
                         new
                         {
-                            Id = "dda8fa89-e050-4217-82fe-1250bc051938",
+                            Id = "da71242b-b1f8-4321-a5b9-d810545457df",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "791689f4-8409-4eca-8452-fa1660495a08",
+                            Id = "6ac18572-0002-4f7b-b574-df5f8dd4c22f",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -224,8 +227,8 @@ namespace TurnoverMeBackend.Infrastructure.Migrations.TurnoverMeDb
                     b.HasData(
                         new
                         {
-                            UserId = "da6da752-040a-4350-8175-6c04bedd0441",
-                            RoleId = "dda8fa89-e050-4217-82fe-1250bc051938"
+                            UserId = "ec8f2759-565f-47a0-bd2d-623f6a88064b",
+                            RoleId = "da71242b-b1f8-4321-a5b9-d810545457df"
                         });
                 });
 
@@ -275,9 +278,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations.TurnoverMeDb
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<string>("To")
                         .IsRequired()
                         .HasColumnType("text");
@@ -296,30 +296,22 @@ namespace TurnoverMeBackend.Infrastructure.Migrations.TurnoverMeDb
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("integer");
-
                     b.HasDiscriminator().HasValue("ApplicationUser");
 
                     b.HasData(
                         new
                         {
-                            Id = "da6da752-040a-4350-8175-6c04bedd0441",
+                            Id = "ec8f2759-565f-47a0-bd2d-623f6a88064b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "97464b2d-6a45-4800-9e7a-129bcf3817d6",
+                            ConcurrencyStamp = "7a5b4d6a-1a45-402f-bae5-82427abb52fb",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEOsyexF1vFBy/wtFTIpXd74a75FSWO/o/yhwYtzcNJq4ICmZeZJcuqHltPfeHW52XA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEItBN8dYy1W5f5pTPJplJp5xTNtVPf9etj+rEmPxrGGbCuWowWOCaGVZNKaIViPT4g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
-                            UserName = "admin",
-                            BranchId = 0,
-                            GroupId = 0
+                            UserName = "admin"
                         });
                 });
 

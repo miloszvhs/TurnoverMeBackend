@@ -26,6 +26,8 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
                 : invoice.InvoiceNumber,
             Remarks = invoice.Remarks
         };
+        
+        newInvoice.CreationTime = DateTime.Now;
 
         MapBuyer();
         MapSeller();
@@ -33,7 +35,6 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
 
         MapItems();
         MapTaxes();
-        MapPayment();
 
         return newInvoice;
 
@@ -116,12 +117,6 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             newInvoice.TotalTaxAmount = invoice.TotalTaxAmount;
             newInvoice.TotalGrossAmount = invoice.TotalGrossAmount;
             newInvoice.Currency = invoice.Currency;
-        }
-        
-        void MapPayment()
-        {
-            newInvoice.IssueDate = DateTime.Now;
-            newInvoice.DeliveryDate = DateTime.Now;
         }
     }
 }

@@ -10,10 +10,10 @@ public class InvoiceDtoHelper
         var dto = new InvoiceDto()
         {
             InvoiceNumber = invoice.InvoiceNumber,
+            CreationTime = invoice.CreationTime,
             IssueDate = invoice.IssueDate,
             Currency = invoice.Currency,
             Remarks = invoice.Remarks,
-            DeliveryDate = invoice.DeliveryDate,
             TotalGrossAmount = invoice.TotalGrossAmount,
             TotalNetAmount = invoice.TotalNetAmount,
             TotalTaxAmount = invoice.TotalTaxAmount,

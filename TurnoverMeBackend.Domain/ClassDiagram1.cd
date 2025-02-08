@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="TurnoverMeBackend.Domain.Entities.Invoices.InvoiceCircuit">
+    <Position X="17.75" Y="4.5" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="TurnoverMeBackend.Domain.Entities.Invoices.InvoiceCircuit.CircuitStatus" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Entities\Invoices\InvoiceCircuit.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AgAAIAAEAAAgAAAAAAAAAAgAAAAIAAAAAAgAAAEAAAA=</HashCode>
+      <FileName>Entities\Invoices\InvoiceCircuit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnoverMeBackend.Domain.Entities.Invoices.Invoice">
+    <Position X="11.75" Y="0.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAEAIggCAAgBgAQAAAACAAMAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Entities\Invoices\Invoice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnoverMeBackend.Domain.Entities.Chambers">
+    <Position X="23" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Chambers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnoverMeBackend.Domain.Entities.ApplicationUser">
+    <Position X="13.75" Y="8.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAABAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Entities\ApplicationUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnoverMeBackend.Domain.Entities.Branch">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -14,6 +14,9 @@ public class InvoiceCircuitConfigurationMap: IEntityTypeConfiguration<InvoiceCir
         builder.Property(x => x.IssueDate).IsRequired();
         builder.Property(x => x.Stage).IsRequired();
         builder.Property(x => x.Note);
+        builder.Property(x => x.Status).IsRequired()
+            .HasConversion<string>();
         builder.Property(x => x.InvoiceId).IsRequired();
+        builder.Property(x => x.UserId);
     }
 }

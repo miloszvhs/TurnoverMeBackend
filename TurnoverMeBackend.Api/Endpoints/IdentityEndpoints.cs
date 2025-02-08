@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using TurnoverMeBackend.Domain.Entities;
 
 namespace TurnoverMeBackend.Api.Endpoints;
 
@@ -18,7 +19,7 @@ public static class IdentityEndpoints
     public static WebApplication AddIdentityEndpoints(this WebApplication app)
     {
         app.MapGroup("account")
-            .MapCustomIdentityApi<IdentityUser, IdentityRole>()
+            .MapCustomIdentityApi<ApplicationUser, IdentityRole>()
             .WithTags("authentication");
         return app;
     }
@@ -122,7 +123,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             {
                 return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
             }
-
+            
             // The signInManager already produced the needed response in the form of a cookie or bearer token.
             return TypedResults.Empty;
         });

@@ -5,7 +5,8 @@ namespace TurnoverMeBackend.Application.DTO;
 public class InvoiceDto
 {
     public string InvoiceNumber { get; set; }
-    public DateTime IssueDate { get; set; }
+    public DateTime CreationTime { get; set; }
+    public DateTime? IssueDate { get; set; }
     public InvoiceSellerDto Seller { get; set; }
     public InvoiceBuyerDto Buyer { get; set; }
     public InvoiceReceiverDto? Receiver { get; set; }
@@ -17,7 +18,7 @@ public class InvoiceDto
     public decimal TotalGrossAmount { get; set; }
     public string Currency { get; set; }
     public string? Remarks { get; set; }
-    
+
     public class InvoiceSellerDto
     {
         public string Name { get; set; }
