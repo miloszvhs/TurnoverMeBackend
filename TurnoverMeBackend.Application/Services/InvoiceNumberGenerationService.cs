@@ -1,5 +1,6 @@
 ﻿using TurnoverMeBackend.Domain.Entities;
 using TurnoverMeBackend.Application.Interfaces;
+using TurnoverMeBackend.Domain.Entities.Invoices;
 
 namespace TurnoverMeBackend.Application.Services;
 

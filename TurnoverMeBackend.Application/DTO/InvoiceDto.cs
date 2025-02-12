@@ -5,14 +5,13 @@ namespace TurnoverMeBackend.Application.DTO;
 public class InvoiceDto
 {
     public string InvoiceNumber { get; set; }
-    public DateTime CreationTime { get; set; }
     public DateTime? IssueDate { get; set; }
+    public DateTime? DueDate { get; set; }
     public InvoiceSellerDto Seller { get; set; }
     public InvoiceBuyerDto Buyer { get; set; }
     public InvoiceReceiverDto? Receiver { get; set; }
-    public DateTime? DeliveryDate { get; set; }
     public IList<InvoicePositionItemDto> Items { get; set; }
-    public IList<InvoiceCircuitDto> Circuits { get; set; }
+    public IList<InvoiceCircuitDto> Approvals { get; set; }
     public decimal TotalNetAmount { get; set; }
     public decimal TotalTaxAmount { get; set; }
     public decimal TotalGrossAmount { get; set; }
@@ -65,11 +64,13 @@ public class InvoiceDto
     
     public class InvoiceCircuitDto
     {
-        public string From { get; set; }
-        public string To { get; set; }
-        public DateTime IssueDate { get; set; }
-        public string Stage { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
+        public int StageLevel { get; set; }
+        public string? GroupId { get; set; }
+        public string? UserId { get; set; }
+        public string? ApproverName { get; set; }
+        public DateTime? AcceptationTime { get; set; }
+        public string Status { get; set; }
     }
 }
 

@@ -2,16 +2,18 @@
 
 public static class ChambersEndpoints
 {
-    public static WebApplication AddChambersEndpoints(this WebApplication app)
+    public static RouteGroupBuilder AddChambersEndpoints(this WebApplication app)
     {
         var chambersGroup = app
             .MapGroup("chambers")
-            .WithTags("chambers")
-            .RequireAuthorization(x => x.RequireRole("User"));
+            .WithTags("chambers");
 
-        chambersGroup.MapGet("/chambers", ()
+        chambersGroup.MapGet("", ()
             => {});
         
-        return app;
+        chambersGroup.MapPost("", ()
+            => {});
+        
+        return chambersGroup;
     }
 }

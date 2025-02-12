@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using TurnoverMeBackend.Application.Abstractions;
+using TurnoverMeBackend.Application.Commands;
 using TurnoverMeBackend.Domain.Entities;
 
 namespace TurnoverMeBackend.Api.Endpoints;
@@ -21,6 +23,7 @@ public static class IdentityEndpoints
         app.MapGroup("account")
             .MapCustomIdentityApi<ApplicationUser, IdentityRole>()
             .WithTags("authentication");
+        
         return app;
     }
 }
@@ -496,3 +499,4 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         public string? Name => null;
     }
 }
+

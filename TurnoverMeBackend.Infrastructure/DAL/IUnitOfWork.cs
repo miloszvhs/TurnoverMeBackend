@@ -16,18 +16,18 @@ public class UnitOfWork : IUnitOfWork
 
     public void Execute(Action action)
     {
-        using var transaction = _context.Database.BeginTransaction();
-
-        try
-        {
+        // using var transaction = _context.Database.BeginTransaction();
+        //
+        // try
+        // {
             action();
-            _context.SaveChanges();
-            transaction.Commit();
-        }
-        catch (Exception e)
-        {
-            transaction.Rollback();
-            throw;
-        }
+        //     _context.SaveChanges();
+        //     transaction.Commit();
+        // }
+        // catch (Exception e)
+        // {
+        //     transaction.Rollback();
+        //     throw;
+        // }
     }
 }

@@ -6,11 +6,11 @@ namespace TurnoverMeBackend.Application.DTO;
 public class SaveInvoiceRequest : IValidatableObject
 {
     public DateTime IssueDate { get; set; }
-    public string? InvoiceNumber { get; set; }
-    public InvoiceRequestSeller Seller { get; set; }
+    public DateTime DueDate { get; set; }
+    public string InvoiceNumber { get; set; }
+    public InvoiceRequestSeller? Seller { get; set; }
     public InvoiceRequestBuyer Buyer { get; set; }
     public InvoiceRequestReceiver? Receiver { get; set; }
-    public DateTime? DeliveryDate { get; set; }
     public List<InvoiceRequestItem> Items { get; set; } = [];
     public decimal TotalNetAmount { get; set; }
     public decimal TotalTaxAmount { get; set; }
@@ -20,8 +20,10 @@ public class SaveInvoiceRequest : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        ValidatorHelper.Validate(Seller);
         ValidatorHelper.Validate(Buyer);
+        
+        if(Seller != null)
+            ValidatorHelper.Validate(Seller);
         
         if(Receiver != null)
             ValidatorHelper.Validate(Receiver);

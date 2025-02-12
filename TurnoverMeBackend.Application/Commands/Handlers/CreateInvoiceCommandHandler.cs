@@ -1,10 +1,9 @@
-﻿using TurnoverMeBackend.Domain.Entities;
-using TurnoverMeBackend.Domain.Entities.Invoices;
-using TurnoverMeBackend.Domain.Entities.ValueObjects;
-using TurnoverMeBackend.Application.Abstractions;
+﻿using TurnoverMeBackend.Application.Abstractions;
 using TurnoverMeBackend.Application.DTO;
 using TurnoverMeBackend.Application.Interfaces;
 using TurnoverMeBackend.Application.Services;
+using TurnoverMeBackend.Domain.Entities.Invoices;
+using TurnoverMeBackend.Domain.Entities.ValueObjects;
 
 namespace TurnoverMeBackend.Application.Commands.Handlers;
 
@@ -27,7 +26,9 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             Remarks = invoice.Remarks
         };
         
-        newInvoice.CreationTime = DateTime.Now;
+        newInvoice.DueDate = invoice.DueDate;
+        newInvoice.IssueDate = invoice.IssueDate;
+        newInvoice.Status = Invoice.InvoiceStatus.New;
 
         MapBuyer();
         MapSeller();

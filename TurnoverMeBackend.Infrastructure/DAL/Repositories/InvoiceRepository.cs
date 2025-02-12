@@ -4,7 +4,7 @@ using TurnoverMeBackend.Domain.Entities.Invoices;
 
 namespace TurnoverMeBackend.Infrastructure.DAL.Repositories;
 
-public class InvoiceRepository(InvoicesDbContext context) : IInvoiceRepository
+public class InvoiceRepository(TurnoverMeDbContext context) : IInvoiceRepository
 {
     private readonly DbSet<Invoice> _invoices = context.Invoices;
 
@@ -27,7 +27,7 @@ public class InvoiceRepository(InvoicesDbContext context) : IInvoiceRepository
             .Include(x => x.Buyer)
             .Include(x => x.Seller)
             .Include(x => x.Items)
-            .Include(x => x.Circuits)
+            .Include(x => x.Approvals)
             .Include(x => x.Receiver)
             .ToList();
     }
@@ -35,7 +35,7 @@ public class InvoiceRepository(InvoicesDbContext context) : IInvoiceRepository
     public List<Invoice> GetForUser(string userGuid)
     {
         return _invoices
-           // .Where(x => x.UserId == userGuid) TODO
+            .Where(x => x.Approvals.Any(x => x.UserId == userGuid))
             .ToList();
     }
 

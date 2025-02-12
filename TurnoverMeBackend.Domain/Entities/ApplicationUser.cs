@@ -5,21 +5,6 @@ namespace TurnoverMeBackend.Domain.Entities;
 
 public class ApplicationUser : IdentityUser
 {
-    public IList<InvoiceCircuit> InvoiceCircuits { get; set; }
-
-    public int BranchId
-    {
-        get => default;
-        set
-        {
-        }
-    }
-
-    public int GroupId
-    {
-        get => default;
-        set
-        {
-        }
-    }
+    public IList<InvoiceApproval> InvoiceCircuits { get; set; }
+    public string? GroupId { get; set; }
 }

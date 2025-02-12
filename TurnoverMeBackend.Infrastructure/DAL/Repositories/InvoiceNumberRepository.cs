@@ -1,10 +1,11 @@
 ﻿using TurnoverMeBackend.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TurnoverMeBackend.Domain.Entities;
+using TurnoverMeBackend.Domain.Entities.Invoices;
 
 namespace TurnoverMeBackend.Infrastructure.DAL.Repositories;
 
-public class InvoiceNumberRepository(InvoicesDbContext dbContext) : IInvoiceNumberRepository
+public class InvoiceNumberRepository(TurnoverMeDbContext dbContext) : IInvoiceNumberRepository
 {
     private DbSet<InvoiceNumber> _invoiceNumbers = dbContext.InvoiceNumbers;
 

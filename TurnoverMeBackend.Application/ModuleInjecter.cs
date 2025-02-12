@@ -11,9 +11,14 @@ public static class ModuleInjecter
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<CreateInvoiceCommand>, CreateInvoiceCommandHandler>();
+        services.AddScoped<ICommandHandler<SetWorkflowForInvoiceCommand>, SetCircuitPathForInvoiceCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateWorkflowCommand>, CreateCircuitPathCommandHandler>();
+        services.AddScoped<ICommandHandlerWithResult<CreateGroupCommandWithResult, string>, CreateGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<AssignUserToGroupCommand>, AssignUserToGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateInvoiceCircuitCommand>, CreateInvoiceCircuitCommandHandler>();
+
         services.AddScoped<IAesService, AesService>();
         services.AddScoped<IInvoiceNumberGenerationService, InvoiceNumberGenerationService>();
         return services;
     }
-    
 }

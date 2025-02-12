@@ -2,11 +2,20 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TurnoverMeBackend.Domain.Entities;
+using TurnoverMeBackend.Domain.Entities.Invoices;
+using TurnoverMeBackend.Domain.Entities.MainFlow;
 
 namespace TurnoverMeBackend.Infrastructure.DAL;
 
-public class TurnoverMeDbContext : IdentityDbContext
+public class TurnoverMeDbContext : IdentityDbContext<ApplicationUser>
 {
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceApproval> InvoiceApprovals { get; set; }
+    public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
+    public DbSet<Workflow> Workflows { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<Stage> Stages { get; set; }
+
     public TurnoverMeDbContext(DbContextOptions<TurnoverMeDbContext> dbContextOptions)
         : base(dbContextOptions)
     {
@@ -16,8 +25,8 @@ public class TurnoverMeDbContext : IdentityDbContext
     {
         var roles = new List<IdentityRole>
         {
-            new IdentityRole {Id = Guid.NewGuid().ToString(), Name = "Admin", NormalizedName = "ADMIN"},
-            new IdentityRole {Id = Guid.NewGuid().ToString(), Name = "User", NormalizedName = "USER"}
+            new IdentityRole {Id = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4", Name = "Admin", NormalizedName = "ADMIN"},
+            new IdentityRole {Id = "333154C0-CB46-4E46-B2B5-1419BE462FB4", Name = "User", NormalizedName = "USER"}
         };
         
         modelBuilder.Entity<IdentityRole>()
@@ -39,6 +48,17 @@ public class TurnoverMeDbContext : IdentityDbContext
         modelBuilder.Entity<ApplicationUser>()
             .HasData(user);
         
+        modelBuilder.Entity<Group>()
+            .HasData(new List<Group>()
+            {
+                new Group()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "UsersGroup",
+                    Users = []
+                }
+            });
+        
         modelBuilder.Entity<IdentityUserRole<string>>()
             .HasData(new IdentityUserRole<string>
             {
@@ -47,5 +67,6 @@ public class TurnoverMeDbContext : IdentityDbContext
             });
         
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 }

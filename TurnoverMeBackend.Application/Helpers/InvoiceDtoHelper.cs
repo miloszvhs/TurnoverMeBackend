@@ -10,7 +10,7 @@ public class InvoiceDtoHelper
         var dto = new InvoiceDto()
         {
             InvoiceNumber = invoice.InvoiceNumber,
-            CreationTime = invoice.CreationTime,
+            DueDate = invoice.DueDate,
             IssueDate = invoice.IssueDate,
             Currency = invoice.Currency,
             Remarks = invoice.Remarks,
@@ -88,13 +88,15 @@ public class InvoiceDtoHelper
                 UnitNetPrice = x.UnitNetPrice,
                 
             }).ToList(),
-            Circuits = invoice.Circuits.Select(x => new InvoiceDto.InvoiceCircuitDto()
+            Approvals = invoice.Approvals.Select(x => new InvoiceDto.InvoiceCircuitDto()
             {
-                From = x.From,
-                To = x.To,
-                IssueDate = x.IssueDate,
-                Stage = x.Stage,
-                Note = x.Note
+                StageLevel = x.StageLevel,
+                GroupId = x.GroupId,
+                UserId = x.UserId,
+                ApproverName = x.ApproverName,
+                AcceptationTime = x.AcceptationTime,
+                Note = x.Note,
+                Status = x.Status.ToString()
             }).ToList()
         };
 
