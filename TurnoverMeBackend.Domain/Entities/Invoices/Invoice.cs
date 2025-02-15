@@ -8,12 +8,13 @@ public class Invoice : BaseEntity
 {
     public string InvoiceNumber { get; set; }
     public DateTime? IssueDate { get; set; }
-    public DateTime? DueDate { get; set; }
-    public InvoiceSeller? Seller { get; set; }
-    public InvoiceBuyer Buyer { get; set; }
+    public DateTime DueDate { get; set; }
+    public InvoiceSeller Seller { get; set; }
+    public InvoiceBuyer? Buyer { get; set; }
     public InvoiceReceiver? Receiver { get; set; }
-    public IList<InvoicePositionItem> Items { get; set; }
+    public IList<InvoicePositionItem>? Items { get; set; }
     public IList<InvoiceApproval> Approvals { get; set; }
+    public IList<InvoiceApprovalHistory> ApprovalsHistories { get; set; }
     public decimal TotalNetAmount { get; set; }
     public decimal TotalTaxAmount { get; set; }
     public decimal TotalGrossAmount { get; set; }
@@ -22,6 +23,7 @@ public class Invoice : BaseEntity
     public InvoiceStatus Status { get; set; }
     public string? WorkflowId { get; set; }
     public Workflow? Workflow { get; set; }
+    public string InvoiceFileAsBase64 { get; set; }
 
     public enum InvoiceStatus
     {

@@ -8,15 +8,16 @@ public class SaveInvoiceRequest : IValidatableObject
     public DateTime IssueDate { get; set; }
     public DateTime DueDate { get; set; }
     public string InvoiceNumber { get; set; }
-    public InvoiceRequestSeller? Seller { get; set; }
-    public InvoiceRequestBuyer Buyer { get; set; }
+    public InvoiceRequestSeller Seller { get; set; }
+    public InvoiceRequestBuyer? Buyer { get; set; }
     public InvoiceRequestReceiver? Receiver { get; set; }
-    public List<InvoiceRequestItem> Items { get; set; } = [];
+    public List<InvoiceRequestItem>? Items { get; set; } = [];
     public decimal TotalNetAmount { get; set; }
     public decimal TotalTaxAmount { get; set; }
     public decimal TotalGrossAmount { get; set; }
     public string Currency { get; set; }
     public string Remarks { get; set; }
+    public string InvoiceFileAsBase64 { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -45,7 +46,7 @@ public class SaveInvoiceRequest : IValidatableObject
 public class InvoiceRequestSeller : IValidatableObject
 {
     public string Name { get; set; }
-    public InvoiceRequestAddress Address { get; set; }
+    public InvoiceRequestAddress? Address { get; set; }
     public TaxNumberDto TaxNumber { get; set; }
     
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

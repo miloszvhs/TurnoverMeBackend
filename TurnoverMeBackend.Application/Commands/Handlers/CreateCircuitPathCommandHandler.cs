@@ -26,8 +26,9 @@ public class CreateCircuitPathCommandHandler(ICircuitPathRepository circuitPathR
             {
                 Name = stage.Name,
                 Group = group,
-                Order = stage.Order,
-                GroupId = group.Id
+                Level = stage.Order,
+                GroupId = group.Id,
+                GroupName = group.Name
             });
         }
         

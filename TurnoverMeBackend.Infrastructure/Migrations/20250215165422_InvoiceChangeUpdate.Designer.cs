@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TurnoverMeBackend.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(TurnoverMeDbContext))]
-    partial class TurnoverMeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250215165422_InvoiceChangeUpdate")]
+    partial class InvoiceChangeUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +160,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "0cee2172-5476-4f8c-93e8-1c0360042f9a",
+                            UserId = "b3ae6012-4792-4beb-a4bc-72ebccd5928f",
                             RoleId = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4"
                         });
                 });
@@ -261,17 +264,17 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0cee2172-5476-4f8c-93e8-1c0360042f9a",
+                            Id = "b3ae6012-4792-4beb-a4bc-72ebccd5928f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "586a931d-9463-4a91-ac99-46f5ae22675a",
+                            ConcurrencyStamp = "c090b45d-068c-42b3-866d-004aa6ccccf8",
                             Email = "admin@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH9q2LQyL0pecocfvWcXD46vBeVF7cn3YMNlSXMLAVOwrjOHJOY8OITk0PjGz1TPew==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN7vOAictw+8Ki8Evl3TvM0IAc5laDtCcxzZiPIE7MSD+uzsnwrvrGhIpqE4fNB0mQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0fab5044-7fd0-4e84-b84a-993839eb86a4",
+                            SecurityStamp = "0005ebb4-8487-4ab8-8a47-46a416352555",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -337,8 +340,11 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.Property<string>("Executor")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceId")
+                    b.Property<string>("InvoiceApprovalId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceId")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsAccepted")
@@ -567,7 +573,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1e79e427-1e1b-477b-ba4a-17bfff6643cb",
+                            Id = "e8b837d9-26ba-461b-b24d-42780efba257",
                             Name = "UsersGroup"
                         });
                 });
@@ -698,9 +704,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                 {
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
                         .WithMany("ApprovalsHistories")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("InvoiceId");
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", b =>

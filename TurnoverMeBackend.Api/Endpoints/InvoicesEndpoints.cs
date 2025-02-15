@@ -27,26 +27,5 @@ public static class InvoicesEndpoints
             });
         
         return group;
-        
-        //TODO
-        //dać termin płatności (Due Date)
-        //Kontrahent
-        //Data wystawienia faktury
-        //Wartość na fakturze
-        
-        
-        //zastanowic sie i dorobic feature
-        //do zastąpywania inynch uzytkowników
-        //pod ich nieobceność
-        
-        //Funkcjonalnosc dodatkowa - odrzuć do etapu w dół LUB odrzuć całkowicie do kancelarii
-        //z wiadomością czemu zostało to odrzucone
-        
-        //od do - wyjebać do - tylko kto zatwierdził
-        
-        //TODO maile - ogarnać powiadomienia mailowe, że do kogoś przyszła faktura
-        
-        //admin powinien miec mozliwosc resetu hasła użytkownikowi
-        //dodania użytkownika
     }
 }

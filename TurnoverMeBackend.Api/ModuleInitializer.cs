@@ -1,4 +1,4 @@
-﻿using TurnoverMeBackend.Api.UglyServices;
+﻿using TurnoverMeBackend.Api.ApiServices;
 
 namespace TurnoverMeBackend.Api;
 

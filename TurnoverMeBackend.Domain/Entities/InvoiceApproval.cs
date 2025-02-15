@@ -15,6 +15,8 @@ public class InvoiceApproval : BaseEntity
     public DateTime? AcceptationTime { get; set; }
     public string? Note { get; set; }
     public CircuitStatus Status { get; set; }
+    public DateTime CreationTime { get; set; }
+    public DateTime DueDate { get; set; }
 
     public enum CircuitStatus
     {
@@ -22,4 +24,15 @@ public class InvoiceApproval : BaseEntity
         Approved = 1,
         Rejected = 2,
     }
+}
+
+public class InvoiceApprovalHistory : BaseEntity
+{
+    public string InvoiceId { get; set; }
+    public string? Executor { get; set; }
+    public DateTime CreationTime { get; set; }
+    public DateTime? ExecutionTime { get; set; }
+    public string StageName { get; set; }
+    public bool IsAccepted { get; set; }
+    public string? Note { get; set; }
 }

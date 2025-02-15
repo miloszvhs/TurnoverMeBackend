@@ -11,6 +11,7 @@ public class TurnoverMeDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceApproval> InvoiceApprovals { get; set; }
+    public DbSet<InvoiceApprovalHistory> InvoiceApprovalsHistories { get; set; }
     public DbSet<InvoiceNumber> InvoiceNumbers { get; set; }
     public DbSet<Workflow> Workflows { get; set; }
     public DbSet<Group> Groups { get; set; }
@@ -26,7 +27,8 @@ public class TurnoverMeDbContext : IdentityDbContext<ApplicationUser>
         var roles = new List<IdentityRole>
         {
             new IdentityRole {Id = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4", Name = "Admin", NormalizedName = "ADMIN"},
-            new IdentityRole {Id = "333154C0-CB46-4E46-B2B5-1419BE462FB4", Name = "User", NormalizedName = "USER"}
+            new IdentityRole {Id = "333154C0-CB46-4E46-B2B5-1419BE462FB4", Name = "User", NormalizedName = "USER"},
+            new IdentityRole {Id = "66154C6-CB46-4E46-B2B5-1419BE462FB66", Name = "Chambers", NormalizedName = "CHAMBERS"}
         };
         
         modelBuilder.Entity<IdentityRole>()
@@ -36,10 +38,10 @@ public class TurnoverMeDbContext : IdentityDbContext<ApplicationUser>
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "admin",
+            NormalizedUserName = "ADMIN",
             Email = "admin@admin.com",
-            EmailConfirmed = true,
-            SecurityStamp = string.Empty,
-            ConcurrencyStamp = Guid.NewGuid().ToString()
+            NormalizedEmail = "admin@admin.com".ToUpper(),
+            EmailConfirmed = false
         };
         
         var passwordHasher = new PasswordHasher<ApplicationUser>();

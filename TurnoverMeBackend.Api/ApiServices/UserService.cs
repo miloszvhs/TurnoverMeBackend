@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TurnoverMeBackend.Api.Endpoints;
-using TurnoverMeBackend.Application.Interfaces;
 using TurnoverMeBackend.Domain.Entities;
 using TurnoverMeBackend.Domain.Entities.MainFlow;
 using TurnoverMeBackend.Infrastructure.DAL;
 
-namespace TurnoverMeBackend.Api.UglyServices;
+namespace TurnoverMeBackend.Api.ApiServices;
 
 public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationUser> userManager,
     GroupRepositoryy groupRepository,
@@ -45,7 +44,8 @@ public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationU
         {
             UserName = createUser.UserName,
             Email = createUser.Email,
-            GroupId = createUser.GroupId
+            GroupId = createUser.GroupId,
+            ForcePasswordChange = createUser.ForcePasswordChange
         };
 
         var result = userManager.CreateAsync(user, createUser.Password).GetAwaiter().GetResult();
@@ -97,7 +97,6 @@ public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationU
             userManager.AddToRoleAsync(user, role.Name).GetAwaiter().GetResult();
         }
 
-
         if (!string.IsNullOrEmpty(updateUser.Password))
         {
             var token = userManager.GeneratePasswordResetTokenAsync(user).GetAwaiter().GetResult();
@@ -105,7 +104,7 @@ public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationU
             if (!result.Succeeded)
                 throw new Exception("Update user error");
         }
-
+        
         if (!string.IsNullOrEmpty(updateUser.GroupId) && user.GroupId != updateUser.GroupId)
             user.GroupId = updateUser.GroupId;
 

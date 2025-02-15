@@ -12,8 +12,8 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(TurnoverMeDbContext))]
-    [Migration("20250211215050_InitialUpdate")]
-    partial class InitialUpdate
+    [Migration("20250215095101_DueDateUpdate")]
+    partial class DueDateUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,6 +62,12 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                             Id = "333154C0-CB46-4E46-B2B5-1419BE462FB4",
                             Name = "User",
                             NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "66154C6-CB46-4E46-B2B5-1419BE462FB66",
+                            Name = "Chambers",
+                            NormalizedName = "CHAMBERS"
                         });
                 });
 
@@ -154,7 +160,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "53bab9cf-16b4-435c-8d25-ecb3c13cc725",
+                            UserId = "159183c5-8738-4fc2-a844-e5dbfae3b82e",
                             RoleId = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4"
                         });
                 });
@@ -223,6 +229,12 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RefreshTokenExpiry")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -249,15 +261,17 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "53bab9cf-16b4-435c-8d25-ecb3c13cc725",
+                            Id = "159183c5-8738-4fc2-a844-e5dbfae3b82e",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b630f242-a44b-4249-a04e-be7aed25ab01",
+                            ConcurrencyStamp = "5e6e24b5-caed-41e4-a01e-6fd3b4f85010",
                             Email = "admin@admin.com",
-                            EmailConfirmed = true,
+                            EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEBwCgztJL/WdGfEjV268hKYlJXlZz+0nYu3DhoP1sEHqLau5PFGqV6y1WBu6wbXFvw==",
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMoNhMKARmX3Kn/6IYZ4xVYKVQtr28hKQGeF9YNwm2nGxnD8Nv+Ch2PF+MGsZ+bOqg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "",
+                            SecurityStamp = "2637b5d9-305a-4184-a972-702a60d32a55",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -273,6 +287,12 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
 
                     b.Property<string>("ApproverName")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("GroupId")
                         .HasColumnType("text");
@@ -303,6 +323,44 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.ToTable("InvoiceApprovals");
                 });
 
+            modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.InvoiceApprovalHistory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ExecutionTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Executor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceApprovalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StageName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceApprovalsHistories");
+                });
+
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", b =>
                 {
                     b.Property<string>("Id")
@@ -312,8 +370,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DueDate")
-                        .IsRequired()
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("InvoiceNumber")
@@ -509,7 +566,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2e2a591b-1f96-42c4-bfc9-6090e569b13c",
+                            Id = "212d06e7-7463-49a3-8a34-53b513de5cb7",
                             Name = "UsersGroup"
                         });
                 });
@@ -523,12 +580,12 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
 
                     b.Property<string>("WorkflowId")
                         .HasColumnType("text");
@@ -630,6 +687,13 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .WithMany("InvoiceCircuits")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.InvoiceApprovalHistory", b =>
+                {
+                    b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
+                        .WithMany("ApprovalsHistories")
+                        .HasForeignKey("InvoiceId");
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", b =>
@@ -840,6 +904,8 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", b =>
                 {
                     b.Navigation("Approvals");
+
+                    b.Navigation("ApprovalsHistories");
 
                     b.Navigation("Buyer")
                         .IsRequired();

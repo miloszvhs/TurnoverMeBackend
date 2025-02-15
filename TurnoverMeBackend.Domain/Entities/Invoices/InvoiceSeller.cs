@@ -7,6 +7,6 @@ public class InvoiceSeller : BaseEntity
 {
     public string InvoiceId { get; set; }
     public string Name { get; set; }
-    public InvoiceAddressValueObject AddressValueObject { get; set; }
+    public InvoiceAddressValueObject? AddressValueObject { get; set; }
     public string TaxNumber { get; set; }
 }

@@ -23,7 +23,8 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             InvoiceNumber = string.IsNullOrWhiteSpace(invoice.InvoiceNumber)
                 ? invoiceNumberGenerationService.GenerateInvoiceNumber("FV") 
                 : invoice.InvoiceNumber,
-            Remarks = invoice.Remarks
+            Remarks = invoice.Remarks,
+            InvoiceFileAsBase64 = invoice.InvoiceFileAsBase64
         };
         
         newInvoice.DueDate = invoice.DueDate;
@@ -41,6 +42,9 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
 
         void MapBuyer()
         {
+            if (invoice.Buyer == null)
+                return;
+            
             newInvoice.Buyer = new InvoiceBuyer()
             {
                 Name = invoice.Buyer.Name,
@@ -63,7 +67,9 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
             {
                 Name = invoice.Seller.Name,
                 TaxNumber = invoice.Seller.TaxNumber.TaxNumber,
-                AddressValueObject = new InvoiceAddressValueObject()
+                AddressValueObject = invoice.Seller.Address is null 
+                    ? null 
+                    : new InvoiceAddressValueObject()
                 {
                     City = invoice.Seller.Address.City,
                     Country = invoice.Seller.Address.Country,
@@ -98,6 +104,9 @@ public class CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
         
         void MapItems()
         {
+            if (invoice.Items == null)
+                return;
+            
             newInvoice.Items = invoice.Items.Select(x => new InvoicePositionItem()
             {
                 Name = x.Name,

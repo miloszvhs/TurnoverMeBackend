@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using TurnoverMeBackend.Api.UglyServices;
+using TurnoverMeBackend.Api.ApiServices;
 using TurnoverMeBackend.Application.Abstractions;
 using TurnoverMeBackend.Application.Commands;
 using TurnoverMeBackend.Application.DTO;
@@ -50,6 +50,9 @@ public static class AdminEndpoints
             return Results.NoContent();
         });
         
+        adminGroup.MapGet("groups/group", (string groupId, 
+            GroupService service) => service.GetGroup(groupId));
+        
         adminGroup.MapGet("groups/", Ok<GroupsResponse> 
             (IQueryHandler<GetGroups, GroupsResponse.GroupDto[]> getGroupsQueryHandler) =>
         {
@@ -89,6 +92,7 @@ public class CreateUser
     public string Password { get; set; } = null!;
     public string GroupId { get; set; } = null!;
     public string RoleId { get; set; } = null!;
+    public bool? ForcePasswordChange { get; set; }
 }
 
 public class UpdateUser
@@ -98,4 +102,5 @@ public class UpdateUser
     public string? Password { get; set; }
     public string? GroupId { get; set; }
     public string? RoleId { get; set; }
+    public bool? ForcePasswordChange { get; set; }
 }

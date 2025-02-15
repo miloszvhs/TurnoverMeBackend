@@ -4,6 +4,7 @@ using TurnoverMeBackend.Application.Commands;
 using TurnoverMeBackend.Application.DTO;
 using TurnoverMeBackend.Application.Queries;
 using TurnoverMeBackend.Domain.Entities.MainFlow;
+using TurnoverMeBackend.Infrastructure.DAL.Handlers;
 
 namespace TurnoverMeBackend.Api.Endpoints;
 
@@ -15,10 +16,10 @@ public static class WorkflowEndpoints
             .MapGroup("workflow")
             .WithTags("workflow");
         
-        group.MapGet("", (IQueryHandler<GetWorkflows, Workflow[]> getWorkflows)
+        group.MapGet("", (IQueryHandler<GetWorkflows, WorkFlowResponseDto[]> getWorkflows)
             => getWorkflows.Handle(new GetWorkflows()));
         
-        group.MapGet("/{workflow}", (IQueryHandler<GetWorkflow, Workflow> getCircuitPath, [FromRoute] string workflow)
+        group.MapGet("/{workflow}", (IQueryHandler<GetWorkflow, WorkFlowResponseDto> getCircuitPath, [FromRoute] string workflow)
             => getCircuitPath.Handle(new GetWorkflow(workflow)));
         
         group.MapPost("",
@@ -26,7 +27,7 @@ public static class WorkflowEndpoints
                 [FromServices]ICommandHandler<CreateWorkflowCommand> createCircuitPathCommandHandler) =>
             {
                 createCircuitPathCommandHandler.Handle(new CreateWorkflowCommand(request));
-            });
+            }).RequireAuthorization();;
         
         group.MapPost("/{workflowId}/invoice/{invoiceId}/",
             (ICommandHandler<SetWorkflowForInvoiceCommand> setCircuitPathForInvoiceCommandHandler, 

@@ -153,7 +153,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false),
+                    Level = table.Column<int>(type: "integer", nullable: false),
                     GroupId = table.Column<string>(type: "text", nullable: false),
                     WorkflowId = table.Column<string>(type: "text", nullable: true)
                 },
@@ -271,7 +271,8 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     ApproverName = table.Column<string>(type: "text", nullable: true),
                     AcceptationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -288,6 +289,30 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         principalTable: "Invoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InvoiceApprovalsHistories",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    InvoiceApprovalId = table.Column<string>(type: "text", nullable: false),
+                    Executor = table.Column<string>(type: "text", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ExecutionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    StageName = table.Column<string>(type: "text", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "boolean", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    InvoiceId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceApprovalsHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InvoiceApprovalsHistories_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -407,17 +432,17 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "GroupId", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "53bab9cf-16b4-435c-8d25-ecb3c13cc725", 0, "b630f242-a44b-4249-a04e-be7aed25ab01", "admin@admin.com", true, null, false, null, null, null, "AQAAAAIAAYagAAAAEBwCgztJL/WdGfEjV268hKYlJXlZz+0nYu3DhoP1sEHqLau5PFGqV6y1WBu6wbXFvw==", null, false, "", false, "admin" });
+                values: new object[] { "66b870ea-1c7b-4f2d-ad41-c97468f29f2c", 0, "b8c0f437-d02b-48be-a843-2fc57f7e6f17", "admin@admin.com", true, null, false, null, null, null, "AQAAAAIAAYagAAAAENCB1Rgacs5jfv39zpB6K/zR31dk5M1DjG/65N0GDnghFgZLMm9x7ig+ehgur30drg==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Groups",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { "2e2a591b-1f96-42c4-bfc9-6090e569b13c", "UsersGroup" });
+                values: new object[] { "13f40632-f8ae-4162-91ce-f7007efe6d22", "UsersGroup" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "BFE154C0-CB46-4E46-B2B5-1419BE462FB4", "53bab9cf-16b4-435c-8d25-ecb3c13cc725" });
+                values: new object[] { "BFE154C0-CB46-4E46-B2B5-1419BE462FB4", "66b870ea-1c7b-4f2d-ad41-c97468f29f2c" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -470,6 +495,11 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                 name: "IX_InvoiceApprovals_UserId",
                 table: "InvoiceApprovals",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceApprovalsHistories_InvoiceId",
+                table: "InvoiceApprovalsHistories",
+                column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceBuyer_InvoiceId",
@@ -536,6 +566,9 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "InvoiceApprovals");
+
+            migrationBuilder.DropTable(
+                name: "InvoiceApprovalsHistories");
 
             migrationBuilder.DropTable(
                 name: "InvoiceBuyer");

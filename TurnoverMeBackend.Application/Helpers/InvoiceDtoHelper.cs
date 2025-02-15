@@ -9,15 +9,18 @@ public class InvoiceDtoHelper
     {
         var dto = new InvoiceDto()
         {
+            Id = invoice.Id,
             InvoiceNumber = invoice.InvoiceNumber,
             DueDate = invoice.DueDate,
             IssueDate = invoice.IssueDate,
             Currency = invoice.Currency,
             Remarks = invoice.Remarks,
+            Status = invoice.Status.ToString(),
             TotalGrossAmount = invoice.TotalGrossAmount,
             TotalNetAmount = invoice.TotalNetAmount,
             TotalTaxAmount = invoice.TotalTaxAmount,
-            Buyer = new InvoiceDto.InvoiceBuyerDto()
+            invoiceFileAsBase64 = invoice.InvoiceFileAsBase64,
+            Buyer = invoice.Buyer == null ? null : new InvoiceDto.InvoiceBuyerDto()
             {
                 Address = new InvoiceDto.AddressDto()
                 {
@@ -37,7 +40,9 @@ public class InvoiceDtoHelper
             },
             Seller = new InvoiceDto.InvoiceSellerDto()
             {
-                Address = new InvoiceDto.AddressDto()
+                Address = invoice.Seller.AddressValueObject == null 
+                    ? null 
+                    : new InvoiceDto.AddressDto()
                 {
                     City = invoice.Seller.AddressValueObject.City,
                     Country = invoice.Seller.AddressValueObject.Country,
@@ -75,7 +80,7 @@ public class InvoiceDtoHelper
                     TaxPrefix = ""
                 }
             },
-            Items = invoice.Items.Select(x => new InvoiceDto.InvoicePositionItemDto()
+            Items = invoice?.Items?.Select(x => new InvoiceDto.InvoicePositionItemDto()
             {
                 Discount = x.Discount,
                 Name = x.Name,
@@ -97,7 +102,17 @@ public class InvoiceDtoHelper
                 AcceptationTime = x.AcceptationTime,
                 Note = x.Note,
                 Status = x.Status.ToString()
-            }).ToList()
+            }).ToList(),
+            ApprovalHistories = invoice.ApprovalsHistories?.Select(x => new InvoiceDto.InvoiceApprovalHistoryDto()
+            {
+                Note = x.Note,
+                Executor = x.Executor,
+                CreationTime = x.CreationTime,
+                ExecutionTime = x.ExecutionTime,
+                IsAccepted = x.IsAccepted,
+                StageName = x.StageName,
+                InvoiceId = x.InvoiceId
+            }).ToArray()
         };
 
         return dto;

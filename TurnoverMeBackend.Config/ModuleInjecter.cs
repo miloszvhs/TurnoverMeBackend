@@ -9,5 +9,8 @@ public static class ModuleInjecter
     public static void InitializeConfiguration(this IServiceCollection serviceCollection, WebApplicationBuilder builder)
     {
         serviceCollection.AddOptions<DbConfig>()
-            .Bind(builder.Configuration.GetSection(DbConfig.Node));
+            .Bind(builder.Configuration.GetSection(DbConfig.Node));       
+        
+        serviceCollection.AddOptions<JwtSettings>()
+            .Bind(builder.Configuration.GetSection(JwtSettings.Node));
     }}

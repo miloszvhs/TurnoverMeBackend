@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TurnoverMeBackend.Api.Endpoints;
 using TurnoverMeBackend.Infrastructure.DAL;
 
-namespace TurnoverMeBackend.Api.UglyServices;
+namespace TurnoverMeBackend.Api.ApiServices;
 
 public class RoleService(TurnoverMeDbContext dbContext,
     RoleManager<IdentityRole> roleManager) : BaseService(dbContext)

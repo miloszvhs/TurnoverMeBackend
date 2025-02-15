@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TurnoverMeBackend.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(TurnoverMeDbContext))]
-    partial class TurnoverMeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212171119_InitialUpdate")]
+    partial class InitialUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,12 +62,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                             Id = "333154C0-CB46-4E46-B2B5-1419BE462FB4",
                             Name = "User",
                             NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "66154C6-CB46-4E46-B2B5-1419BE462FB66",
-                            Name = "Chambers",
-                            NormalizedName = "CHAMBERS"
                         });
                 });
 
@@ -157,7 +154,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "0cee2172-5476-4f8c-93e8-1c0360042f9a",
+                            UserId = "66b870ea-1c7b-4f2d-ad41-c97468f29f2c",
                             RoleId = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4"
                         });
                 });
@@ -200,9 +197,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("ForcePasswordChange")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("GroupId")
                         .HasColumnType("text");
 
@@ -228,12 +222,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -261,17 +249,15 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0cee2172-5476-4f8c-93e8-1c0360042f9a",
+                            Id = "66b870ea-1c7b-4f2d-ad41-c97468f29f2c",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "586a931d-9463-4a91-ac99-46f5ae22675a",
+                            ConcurrencyStamp = "b8c0f437-d02b-48be-a843-2fc57f7e6f17",
                             Email = "admin@admin.com",
-                            EmailConfirmed = false,
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@ADMIN.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH9q2LQyL0pecocfvWcXD46vBeVF7cn3YMNlSXMLAVOwrjOHJOY8OITk0PjGz1TPew==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENCB1Rgacs5jfv39zpB6K/zR31dk5M1DjG/65N0GDnghFgZLMm9x7ig+ehgur30drg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0fab5044-7fd0-4e84-b84a-993839eb86a4",
+                            SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -289,9 +275,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("GroupId")
@@ -337,8 +320,11 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.Property<string>("Executor")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceId")
+                    b.Property<string>("InvoiceApprovalId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceId")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsAccepted")
@@ -367,12 +353,9 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("InvoiceFileAsBase64")
+                    b.Property<DateTime?>("DueDate")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
@@ -567,7 +550,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1e79e427-1e1b-477b-ba4a-17bfff6643cb",
+                            Id = "13f40632-f8ae-4162-91ce-f7007efe6d22",
                             Name = "UsersGroup"
                         });
                 });
@@ -578,10 +561,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("GroupId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("GroupName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -698,9 +677,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                 {
                     b.HasOne("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", null)
                         .WithMany("ApprovalsHistories")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("InvoiceId");
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.Invoices.Invoice", b =>
@@ -883,7 +860,8 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                                 .HasForeignKey("InvoiceSellerId");
                         });
 
-                    b.Navigation("AddressValueObject");
+                    b.Navigation("AddressValueObject")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.MainFlow.Stage", b =>
@@ -913,14 +891,14 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
 
                     b.Navigation("ApprovalsHistories");
 
-                    b.Navigation("Buyer");
+                    b.Navigation("Buyer")
+                        .IsRequired();
 
                     b.Navigation("Items");
 
                     b.Navigation("Receiver");
 
-                    b.Navigation("Seller")
-                        .IsRequired();
+                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("TurnoverMeBackend.Domain.Entities.MainFlow.Group", b =>

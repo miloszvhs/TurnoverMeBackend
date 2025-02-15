@@ -1,6 +1,6 @@
 ﻿using TurnoverMeBackend.Infrastructure.DAL;
 
-namespace TurnoverMeBackend.Api.UglyServices;
+namespace TurnoverMeBackend.Api.ApiServices;
 
 public abstract class BaseService(TurnoverMeDbContext dbContext)
 {
