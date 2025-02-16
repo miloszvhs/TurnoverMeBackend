@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TurnoverMeBackend.Domain.Entities;
 using TurnoverMeBackend.Domain.Entities.Invoices;
 using TurnoverMeBackend.Infrastructure.DAL;
 
 namespace TurnoverMeBackend.Api.ApiServices;
 
-public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbContext)
+public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<ApplicationUser> userManager) : BaseService(dbContext)
 {
-    public void SendInvoiceFurther(SendInvoice sendInvoice)
+    public void SendInvoiceToWorkflow(SendInvoice sendInvoice)
     {
         var invoice = dbContext.Invoices
             .Include(x => x.Approvals)
@@ -17,15 +18,22 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
         if (invoice == null)
             throw new Exception("Invoice not found!");
 
+        var workflow = dbContext
+            .Workflows
+            .Include(x => x.Stages)
+            .SingleOrDefaultAsync(x => x.Id == sendInvoice.WorkflowId).GetAwaiter().GetResult();
+        if (workflow == null)
+            throw new Exception("Workflow doesnt exists");
+        
         if (invoice.Approvals == null || !invoice.Approvals.Any())
         {
             var firstApproval = new InvoiceApproval
             {
                 InvoiceId = sendInvoice.InvoiceId,
                 StageLevel = 1,
-                Status = InvoiceApproval.CircuitStatus.AwaitingApprove,
-                CreationTime = DateTime.UtcNow,
-                DueDate = invoice.DueDate
+                Status = ApprovalStatus.AwaitingApprove,
+                CreationTime = DateTime.Now,
+                DueDate = invoice.DueDate,
             };
 
             if (!string.IsNullOrEmpty(sendInvoice.UserId))
@@ -41,30 +49,23 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
                 throw new Exception("Either UserId or GroupId must be provided.");
             }
             
-            var workflow = dbContext
-                .Workflows
-                .Include(x => x.Stages)
-                .SingleOrDefaultAsync(x => x.Id == sendInvoice.WorkflowId).GetAwaiter().GetResult();
-            if (workflow == null)
-                throw new Exception("Workflow doesnt exists");
-            
             invoice.Status = Invoice.InvoiceStatus.PendingApproval;
             invoice.Workflow = workflow;
             invoice.WorkflowId = workflow.Id;
             dbContext.InvoiceApprovals.Add(firstApproval);
-            dbContext.InvoiceApprovalsHistories.Add(CreateNewFrom(firstApproval));
+            dbContext.InvoiceApprovalsHistories.Add(CreateNewFrom(invoice, firstApproval));
             dbContext.SaveChanges();
             return;
         }
 
         var currentApproval = invoice.Approvals
             .OrderByDescending(x => x.StageLevel)
-            .FirstOrDefault(x => x.Status == InvoiceApproval.CircuitStatus.AwaitingApprove);
+            .FirstOrDefault(x => x.Status == ApprovalStatus.AwaitingApprove);
 
         if (currentApproval == null)
             throw new Exception("No pending approval found!");
 
-        currentApproval.Status = InvoiceApproval.CircuitStatus.Approved;
+        currentApproval.Status = ApprovalStatus.Approved;
         currentApproval.AcceptationTime = DateTime.UtcNow;
 
         var nextStageLevel = currentApproval.StageLevel + 1;
@@ -80,9 +81,10 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
         {
             InvoiceId = sendInvoice.InvoiceId,
             StageLevel = nextStageLevel,
-            Status = InvoiceApproval.CircuitStatus.AwaitingApprove,
+            Status = ApprovalStatus.AwaitingApprove,
             CreationTime = DateTime.UtcNow,
-            DueDate = invoice.DueDate
+            DueDate = invoice.DueDate,
+            LastApprovalId = currentApproval.Id
         };
 
         if (!string.IsNullOrEmpty(sendInvoice.UserId))
@@ -100,30 +102,6 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
 
         dbContext.InvoiceApprovals.Add(nextApproval);
         dbContext.SaveChanges();
-
-        InvoiceApprovalHistory CreateNewFrom(InvoiceApproval invoiceApproval)
-        {
-            return new InvoiceApprovalHistory()
-            {
-                Executor = invoiceApproval.ApproverName,
-                CreationTime = invoiceApproval.CreationTime,
-                IsAccepted = invoiceApproval.Status == InvoiceApproval.CircuitStatus.Approved,
-                ExecutionTime = null,
-                StageName = invoice.Workflow?.Stages.FirstOrDefault(x => x.Level == invoiceApproval.StageLevel)?.Name,
-                Note = invoiceApproval.Note,
-                InvoiceId = invoiceApproval.InvoiceId
-            };
-        }
-    }
-
-    public void SendBackToChambers()
-    {
-
-    }
-
-    public void SendInvoiceToLastUsedAcceptance()
-    {
-
     }
 
     public ApprovalResponse[] GetInvoiceApprovalHistories(string invoiceId)
@@ -162,7 +140,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
 
         var approval = invoice.Approvals
             .OrderByDescending(x => x.StageLevel)
-            .FirstOrDefault(x => x.Status == InvoiceApproval.CircuitStatus.AwaitingApprove);
+            .FirstOrDefault(x => x.Status == ApprovalStatus.AwaitingApprove);
 
         if (approval == null)
             throw new Exception("No pending approval found!");
@@ -174,7 +152,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
             CreationTime = DateTime.UtcNow,
             ExecutionTime = approval.AcceptationTime,
             StageName = $"Stage {approval.StageLevel}",
-            IsAccepted = approval.Status == InvoiceApproval.CircuitStatus.Approved,
+            IsAccepted = approval.Status == ApprovalStatus.Approved,
             Note = approval.Note
         };
 
@@ -192,7 +170,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
         if(!editApproval.IsAccepted)
         {
             approval.Note = editApproval.Note; // Example update
-            approval.Status = InvoiceApproval.CircuitStatus.Rejected;
+            approval.Status = ApprovalStatus.Rejected;
         }
 
         dbContext.InvoiceApprovals.Update(approval);
@@ -208,6 +186,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
                 invoice => invoice.Id,
                 (approval, invoice) => new InvoiceApprovalDto
                 {
+                    Id = approval.Id,
                     InvoiceId = approval.InvoiceId,
                     DocumentNumber = invoice.InvoiceNumber,
                     StageLevel = approval.StageLevel,
@@ -219,7 +198,9 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
                     Status = approval.Status.ToString(),
                     CreationTime = approval.CreationTime,
                     DueDate = approval.DueDate,
-                    InvoiceFileAsBase64 = invoice.InvoiceFileAsBase64
+                    InvoiceFileAsBase64 = invoice.InvoiceFileAsBase64,
+                    LastApprovalId = approval.LastApprovalId,
+                    ConstantlyRejected = approval.ConstantlyRejected
                 })
             .ToList();
     }
@@ -227,12 +208,15 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
     public IEnumerable<InvoiceApprovalDto> GetMyApprovals(string userId)
     {
         return dbContext.InvoiceApprovals
-            .Where(x => x.UserId == userId && x.Status == InvoiceApproval.CircuitStatus.AwaitingApprove)
+            .Where(x => x.UserId == userId 
+                        && (x.Status == ApprovalStatus.AwaitingApprove
+                        || x.Status == ApprovalStatus.Rejected))
             .Join(dbContext.Invoices,
                 approval => approval.InvoiceId,
                 invoice => invoice.Id,
                 (approval, invoice) => new InvoiceApprovalDto
                 {
+                    Id = approval.Id,
                     InvoiceId = approval.InvoiceId,
                     DocumentNumber = invoice.InvoiceNumber,
                     StageLevel = approval.StageLevel,
@@ -243,7 +227,10 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
                     Note = approval.Note,
                     Status = approval.Status.ToString(),
                     CreationTime = approval.CreationTime,
-                    DueDate = approval.DueDate
+                    DueDate = approval.DueDate,
+                    InvoiceFileAsBase64 = invoice.InvoiceFileAsBase64,
+                    LastApprovalId = approval.LastApprovalId,
+                    ConstantlyRejected = approval.ConstantlyRejected
                 })
             .ToList();
     }
@@ -251,12 +238,13 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
     public IEnumerable<InvoiceApprovalDto> GetAcceptedApprovals(string userId)
     {
         return dbContext.InvoiceApprovals
-            .Where(x => x.UserId == userId && x.Status == InvoiceApproval.CircuitStatus.Approved)
+            .Where(x => x.UserId == userId && x.Status == ApprovalStatus.Approved)
             .Join(dbContext.Invoices,
                 approval => approval.InvoiceId,
                 invoice => invoice.Id,
                 (approval, invoice) => new InvoiceApprovalDto
                 {
+                    Id = approval.Id,
                     InvoiceId = approval.InvoiceId,
                     DocumentNumber = invoice.InvoiceNumber,
                     StageLevel = approval.StageLevel,
@@ -267,7 +255,10 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
                     Note = approval.Note,
                     Status = approval.Status.ToString(),
                     CreationTime = approval.CreationTime,
-                    DueDate = approval.DueDate
+                    DueDate = approval.DueDate,
+                    InvoiceFileAsBase64 = invoice.InvoiceFileAsBase64,
+                    LastApprovalId = approval.LastApprovalId,
+                    ConstantlyRejected = approval.ConstantlyRejected
                 })
             .ToList();
     }
@@ -279,41 +270,189 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
         if (approval == null)
             throw new Exception("Approval not found!");
 
+        if (!string.IsNullOrWhiteSpace(approval.UserId))
+            throw new Exception("Approval was already taken");
+            
         approval.UserId = userId;
         dbContext.SaveChanges();
     }
 
-    public void ApproveApproval(string approvalId)
+    public void ApproveApproval(ApproveApproval approveApproval)
     {
         var approval = dbContext.InvoiceApprovals
-            .SingleOrDefault(x => x.Id == approvalId);
+            .SingleOrDefault(x => x.Id == approveApproval.ApprovalId);
         if (approval == null)
             throw new Exception("Approval not found!");
 
-        approval.Status = InvoiceApproval.CircuitStatus.Approved;
-        approval.AcceptationTime = DateTime.UtcNow;
+        var invoice = dbContext.Invoices.SingleOrDefault(x => x.Id == approval.InvoiceId);
+        if (invoice == null)
+            throw new Exception("Invoice not found!");
+
+        var workflow = dbContext.Workflows.Include(x => x.Stages).SingleOrDefault(x => x.Id == invoice.WorkflowId);
+        if (workflow == null)
+            throw new Exception("Workflow not found!");
+        
+        var user = userManager.FindByIdAsync(approval.UserId).GetAwaiter().GetResult();
+        if (user == null)
+            throw new Exception("User not found!");
+        
+        approval.Status = ApprovalStatus.Approved;
+        approval.AcceptationTime = DateTime.Now;
+        approval.Note = approveApproval.Note;
+        dbContext.InvoiceApprovalsHistories.Add(CreateAcceptedFrom(user, invoice, approval));
+        
+        SendFurther();
         dbContext.SaveChanges();
+
+        void SendFurther()
+        {
+            var nextStageLevel = approval.StageLevel + 1;
+
+            if (nextStageLevel >= workflow.Stages.Max(x => x.Level))
+            {
+                invoice.Status = Invoice.InvoiceStatus.Approved;
+                dbContext.SaveChanges();
+                return;
+            }
+
+            var nextApproval = new InvoiceApproval
+            {
+                InvoiceId = approval.InvoiceId,
+                StageLevel = nextStageLevel,
+                Status = ApprovalStatus.AwaitingApprove,
+                CreationTime = DateTime.UtcNow,
+                DueDate = invoice.DueDate,
+                LastApprovalId = approval.Id,
+                GroupId = workflow.Stages.SingleOrDefault(x => x.Level == nextStageLevel).GroupId
+            };
+            
+            dbContext.InvoiceApprovals.Add(nextApproval);
+        }
     }
 
-    public void RejectApproval(string approvalId, string note, string option)
+    public void RejectApproval(RejectApproval rejectApproval)
     {
         var approval = dbContext.InvoiceApprovals
-            .SingleOrDefault(x => x.Id == approvalId);
+            .SingleOrDefault(x => x.Id == rejectApproval.ApprovalId);
         if (approval == null)
             throw new Exception("Approval not found!");
+        
+        var invoice = dbContext.Invoices
+            .Include(x => x.Approvals)
+            .Include(x => x.Workflow)
+            .SingleOrDefault(x => x.Id == approval.InvoiceId);
+        if (invoice == null)
+            throw new Exception("Invoice not found");
 
-        approval.Status = InvoiceApproval.CircuitStatus.Rejected;
-        approval.Note = note;
+        var user = dbContext.Users.SingleOrDefault(x => x.Id == approval.UserId);
+        if (user == null)
+            throw new Exception("User not found!");
+        
+        var workflow = dbContext.Workflows.Include(x => x.Stages).SingleOrDefault(x => x.Id == invoice.WorkflowId);
+        if (user == null)
+            throw new Exception("Workflow not found!");
+        
+        approval.Status = ApprovalStatus.Rejected;
+        approval.Note = rejectApproval.Note;
+
+        dbContext.InvoiceApprovalsHistories.Add(CreateRejectedFrom(user, invoice, approval));
+        
+        switch (rejectApproval.Option)
+        {
+            case "back":
+                SendBack();
+                break;
+            case "chambers":
+                SendToChambers();
+                break;
+            default:
+                throw new NotSupportedException(rejectApproval.Option);
+        }
+        
         dbContext.SaveChanges();
 
-        if (option == "back")
+        void SendBack()
         {
-            // Logic to send back
+            if (string.IsNullOrWhiteSpace(approval.LastApprovalId))
+            {
+                invoice.Status = Invoice.InvoiceStatus.Rejected;
+                return;
+            }
+            
+            var lastApproval = dbContext.InvoiceApprovals.SingleOrDefault(x => x.Id == approval.LastApprovalId);
+            lastApproval.Status = ApprovalStatus.Rejected;
+            lastApproval.Note = GenerateRejectedNote();
         }
-        else if (option == "chambers")
+
+        void SendToChambers()
         {
-            // Logic to send to chambers
+            invoice.Status = Invoice.InvoiceStatus.Rejected;
+            foreach (var invoiceApproval in invoice.Approvals)
+            {
+                invoiceApproval.Status = ApprovalStatus.Rejected;
+                invoiceApproval.Note = GenerateUltimateRejectedNote();
+                invoiceApproval.ConstantlyRejected = true;
+            }
         }
+        
+        string GenerateRejectedNote()
+        {
+            return $"Odrzucone przez '{user.UserName}' " +
+                   $"z '{workflow.Stages.SingleOrDefault(x => x.Level == approval.StageLevel).Name}'. " +
+                   $"Powód: {approval.Note}";
+        }
+
+        string GenerateUltimateRejectedNote()
+        {
+            return $"Odrzucone i zwrócone do kancelarii przez '{user.UserName}' " +
+                   $"z '{workflow.Stages.SingleOrDefault(x => x.Level == approval.StageLevel).Name}'. " +
+                   $"Powód: {approval.Note}";
+        }
+    }
+
+    InvoiceApprovalHistory CreateRejectedFrom(ApplicationUser user, Invoice invoice, InvoiceApproval invoiceApproval)
+    {
+        return new InvoiceApprovalHistory()
+        {
+            Executor = user.UserName,
+            CreationTime = invoiceApproval.CreationTime,
+            IsAccepted = false,
+            ExecutionTime = DateTime.Now,
+            StageName = invoice.Workflow?.Stages.FirstOrDefault(x => x.Level == invoiceApproval.StageLevel)?.Name,
+            Note = invoiceApproval.Note,
+            InvoiceId = invoiceApproval.InvoiceId,
+            Status = ApprovalStatus.Rejected
+        };
+    }
+    
+    InvoiceApprovalHistory CreateAcceptedFrom(ApplicationUser user, Invoice invoice, InvoiceApproval invoiceApproval)
+    {
+        return new InvoiceApprovalHistory()
+        {
+            Executor = user.UserName,
+            CreationTime = invoiceApproval.CreationTime,
+            IsAccepted = true,
+            ExecutionTime = invoiceApproval.AcceptationTime,
+            StageName = invoice.Workflow?.Stages.FirstOrDefault(x => x.Level == invoiceApproval.StageLevel)?.Name,
+            Note = invoiceApproval.Note,
+            InvoiceId = invoiceApproval.InvoiceId,
+            Status = ApprovalStatus.Approved
+        };
+    }
+    
+    InvoiceApprovalHistory CreateNewFrom(Invoice invoice, InvoiceApproval invoiceApproval)
+    {
+        return new InvoiceApprovalHistory()
+        {
+            Executor = invoiceApproval.ApproverName,
+            CreationTime = invoiceApproval.CreationTime,
+            IsAccepted = invoiceApproval.Status == ApprovalStatus.Approved,
+            ExecutionTime = null,
+            StageName = invoice.Workflow?.Stages.FirstOrDefault(x => x.Level == invoiceApproval.StageLevel)?.Name,
+            Note = invoiceApproval.Note,
+            InvoiceId = invoiceApproval.InvoiceId,
+            Status = ApprovalStatus.AwaitingApprove
+        };
     }
     
     private ApprovalResponse Map(InvoiceApprovalHistory approval)
@@ -325,31 +464,28 @@ public class ApprovalService(TurnoverMeDbContext dbContext) : BaseService(dbCont
             CreationTime = approval.CreationTime,
             IsAccepted = approval.IsAccepted,
             StageName = approval.StageName,
-            Note = approval.Note
-        };
-    }
-
-    private InvoiceApprovalDto MapInvoiceApprovalDto(InvoiceApproval approval, Invoice invoice)
-    {
-        return new InvoiceApprovalDto()
-        {
-            InvoiceId = approval.InvoiceId,
-            DocumentNumber = invoice.InvoiceNumber,
-            StageLevel = approval.StageLevel,
-            GroupId = approval.GroupId,
-            UserId = approval.UserId,
-            ApproverName = approval.ApproverName,
-            AcceptationTime = approval.AcceptationTime,
             Note = approval.Note,
             Status = approval.Status.ToString(),
-            CreationTime = approval.CreationTime,
-            DueDate = approval.DueDate
         };
     }
 }
 
+public class RejectApproval
+{
+    public string ApprovalId { get; set; }
+    public string Note { get; set; }
+    public string Option { get; set; }
+}
+
+public class ApproveApproval
+{
+    public string ApprovalId { get; set; }
+    public string Note { get; set; }
+}
+
 public class InvoiceApprovalDto
 {
+    public string Id { get; set; }
     public string InvoiceId { get; set; }
     public string DocumentNumber { get; set; }
     public int StageLevel { get; set; }
@@ -362,6 +498,8 @@ public class InvoiceApprovalDto
     public DateTime CreationTime { get; set; }
     public DateTime DueDate { get; set; }
     public string InvoiceFileAsBase64 { get; set; }
+    public string? LastApprovalId { get; set; }
+    public bool ConstantlyRejected { get; set; }
 }
 
 public class SendInvoice

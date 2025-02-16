@@ -1,6 +1,6 @@
 ﻿namespace TurnoverMeBackend.Application.DTO;
 
-public class CreateCircuitPathRequest
+public class CreateWorkflowRequest
 {
     public string name { get; set; }
     public StageDto[] stages { get; set; }

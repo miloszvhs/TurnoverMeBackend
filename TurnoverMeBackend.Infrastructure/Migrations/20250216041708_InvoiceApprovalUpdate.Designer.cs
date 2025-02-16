@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TurnoverMeBackend.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Infrastructure.Migrations
 {
     [DbContext(typeof(TurnoverMeDbContext))]
-    partial class TurnoverMeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250216041708_InvoiceApprovalUpdate")]
+    partial class InvoiceApprovalUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +160,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "06e0236a-cd60-4c93-a0ac-9bb8a6ab093f",
+                            UserId = "4cdce2bd-43d0-429f-9805-4c7750c352a4",
                             RoleId = "BFE154C0-CB46-4E46-B2B5-1419BE462FB4"
                         });
                 });
@@ -261,17 +264,17 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "06e0236a-cd60-4c93-a0ac-9bb8a6ab093f",
+                            Id = "4cdce2bd-43d0-429f-9805-4c7750c352a4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d34a11c8-21ae-44f5-bdc7-8fc997a50f9a",
+                            ConcurrencyStamp = "711be9c8-3111-47b8-a1a8-6efb8b08399d",
                             Email = "admin@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENAdpNSgMZ8bJOTbsKf5+UaVRqVdFKRgelrqb1H1fVUWTyOzEFCv/BFpJ6XxiuAWxw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHecF4ppIUiTJR3Y4LY+ba9PpgM74vzUoWZh4JYbylDllj4iBLhoM9USCzL784Sz4A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "30adeed3-4a6d-4840-b9b3-c1584ad0e17a",
+                            SecurityStamp = "ed6dac5f-4c2f-4620-8d5a-906c7f788ee1",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -305,6 +308,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LastApprovalId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Note")
@@ -354,10 +358,6 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("StageName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -577,7 +577,7 @@ namespace TurnoverMeBackend.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "147b89f3-0b99-4229-9e28-5e86d9a178e7",
+                            Id = "bea78bbb-e19e-4167-a54b-8d94aa2a46b8",
                             Name = "UsersGroup"
                         });
                 });

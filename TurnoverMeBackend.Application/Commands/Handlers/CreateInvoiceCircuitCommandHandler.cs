@@ -15,7 +15,7 @@ public class CreateInvoiceCircuitCommandHandler(IInvoiceCircuitRepository invoic
             Note = null,
             AcceptationTime = null,
             InvoiceId = command.InvoiceId,
-            Status = InvoiceApproval.CircuitStatus.AwaitingApprove,
+            Status = ApprovalStatus.AwaitingApprove,
             GroupId = command.GroupId,
             StageLevel = command.StageLevel,
             ApproverName = null

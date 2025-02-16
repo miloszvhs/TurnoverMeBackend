@@ -36,8 +36,8 @@ public class AuthService(TurnoverMeDbContext dbContext,
             return response;
 
         response.IsLoggedIn = true;
-        response.JwtToken = this.GenerateTokenString(identityUser);
-        response.RefreshToken = this.GenerateRefreshTokenString();
+        response.JwtToken = GenerateTokenString(identityUser);
+        response.RefreshToken = GenerateRefreshTokenString();
 
         if (identityUser.ForcePasswordChange is true)
         {
@@ -46,7 +46,7 @@ public class AuthService(TurnoverMeDbContext dbContext,
         }
 
         identityUser.RefreshToken = response.RefreshToken;
-        identityUser.RefreshTokenExpiry = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.Value.ExpiryInMinutes));
+        identityUser.RefreshTokenExpiry = DateTime.Now.AddMinutes(jwtSettings.Value.ExpiryInMinutes);
         await userManager.UpdateAsync(identityUser);
 
         return response;
@@ -65,14 +65,14 @@ public class AuthService(TurnoverMeDbContext dbContext,
             return response;
 
         response.IsLoggedIn = true;
-        response.JwtToken = this.GenerateTokenString(identityUser);
-        response.RefreshToken = this.GenerateRefreshTokenString();
+        response.JwtToken = GenerateTokenString(identityUser);
+        response.RefreshToken = GenerateRefreshTokenString();
 
         if (identityUser.ForcePasswordChange is true)
             response.ForcePasswordChange = identityUser.ForcePasswordChange; 
         
         identityUser.RefreshToken = response.RefreshToken;
-        identityUser.RefreshTokenExpiry = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.Value.ExpiryInMinutes));
+        identityUser.RefreshTokenExpiry = DateTime.Now.AddMinutes(jwtSettings.Value.ExpiryInMinutes);
         await userManager.UpdateAsync(identityUser);
 
         return response;

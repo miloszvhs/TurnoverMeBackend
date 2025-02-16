@@ -11,7 +11,7 @@ public static class InvoiceApprovalEndpoints
         
         group.MapGet("", (ApprovalService service, string invoiceApprovalId) => service.GetInvoiceApproval(invoiceApprovalId));
         
-        group.MapPost("", (ApprovalService service, SendInvoice request) => {  service.SendInvoiceFurther(request); });
+        group.MapPost("", (ApprovalService service, SendInvoice request) => {  service.SendInvoiceToWorkflow(request); });
         
         group.MapGet("/history", (ApprovalService service, string invoiceId) => service.GetInvoiceApprovalHistories(invoiceId));
         
@@ -27,9 +27,9 @@ public static class InvoiceApprovalEndpoints
 
         group.MapPost("/claim", (ApprovalService service, string approvalId, string userId) => { service.ClaimApproval(approvalId, userId); });
 
-        group.MapPost("/approve", (ApprovalService service, string approvalId) => { service.ApproveApproval(approvalId); });
+        group.MapPost("/approve", (ApprovalService service, ApproveApproval approveApproval) => { service.ApproveApproval(approveApproval); });
 
-        group.MapPost("/reject", (ApprovalService service, string approvalId, string note, string option) => { service.RejectApproval(approvalId, note, option); });
+        group.MapPost("/reject", (ApprovalService service, RejectApproval rejectApproval) => { service.RejectApproval(rejectApproval); });
         
         return group;
     }

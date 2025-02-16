@@ -23,7 +23,7 @@ public static class WorkflowEndpoints
             => getCircuitPath.Handle(new GetWorkflow(workflow)));
         
         group.MapPost("",
-            ([FromBody] CreateCircuitPathRequest request, 
+            ([FromBody] CreateWorkflowRequest request, 
                 [FromServices]ICommandHandler<CreateWorkflowCommand> createCircuitPathCommandHandler) =>
             {
                 createCircuitPathCommandHandler.Handle(new CreateWorkflowCommand(request));

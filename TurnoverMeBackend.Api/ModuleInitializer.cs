@@ -4,7 +4,7 @@ namespace TurnoverMeBackend.Api;
 
 public static class ModuleInitializer
 {
-    public static void AddUglyServices(this IServiceCollection services)
+    public static void AddApiServices(this IServiceCollection services)
     {
         var baseServiceType = typeof(BaseService);
         var assembly = baseServiceType.Assembly;

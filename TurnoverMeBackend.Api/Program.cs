@@ -1,18 +1,12 @@
-using System.Text;
 using TurnoverMeBackend.Application;
 using TurnoverMeBackend.Config;
 using TurnoverMeBackend.Config.Configs;
 using TurnoverMeBackend.Api.Endpoints;
 using TurnoverMeBackend.Infrastructure;
 using TurnoverMeBackend.Infrastructure.DAL;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Serilog;
 using TurnoverMeBackend.Api.Extensions;
-using TurnoverMeBackend.Api.Middlewares;
-using TurnoverMeBackend.Domain.Entities;
 
 namespace TurnoverMeBackend.Api;
 
@@ -22,6 +16,14 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
+        
         builder.Services.AddDbContext<TurnoverMeDbContext>(opt =>
         {
             var dbConfig = builder.Configuration.GetRequiredSection(DbConfig.Node).Get<DbConfig>();
@@ -31,7 +33,7 @@ public class Program
         builder.Services.AddAuthorization();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddConfiguration(builder.Configuration);
-        builder.Services.AddUglyServices();
+        builder.Services.AddApiServices();
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure();
         builder.Services.InitializeConfiguration(builder);
@@ -44,7 +46,7 @@ public class Program
             app.UseSwaggerUI();
         }
         //app.UseMiddleware<TransactionMiddleware>();
-
+        
         app.UseCors("CorsPolicy");
         app.UseHttpsRedirection();
         app.UseAuthentication();
