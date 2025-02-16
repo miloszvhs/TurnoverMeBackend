@@ -15,16 +15,11 @@ public static class AdminEndpoints
         var adminGroup = app
             .MapGroup("admin")
             .WithTags("admin");
-        
-        adminGroup.MapGet("/invoices", (IQueryHandler<GetInvoices, InvoiceDto[]> getInvoicesHandler)
-                => getInvoicesHandler.Handle(new GetInvoices()));
 
         adminGroup.MapGet("/roles", (RoleService service) => service.GetRoles());
         adminGroup.MapPost("/roles", (CreateRole role, RoleService service) => service.AddRole(role));
 
-        
         adminGroup.MapGet("/users", (UserService service) => service.GetUsers());
-        
         adminGroup.MapPost("/users", (
             CreateUser createUser,
             UserService service) =>
@@ -50,35 +45,38 @@ public static class AdminEndpoints
             return Results.NoContent();
         });
         
-        adminGroup.MapGet("groups/group", (string groupId, 
-            GroupService service) => service.GetGroup(groupId));
-        
-        adminGroup.MapGet("groups/", Ok<GroupsResponse> 
+        adminGroup.MapGet("groups/", Ok<GroupsResponse>
             (IQueryHandler<GetGroups, GroupsResponse.GroupDto[]> getGroupsQueryHandler) =>
         {
             var result = getGroupsQueryHandler.Handle(new GetGroups());
             return TypedResults.Ok(new GroupsResponse() { Groups = result.ToList() });
         });
-        
-        adminGroup.MapPost("groups/create", Ok<GroupEndpoints.CreateGroupResponse> 
-            (ICommandHandlerWithResult<CreateGroupCommandWithResult, string> createGroupCommandHandler, CreateGroupCommandWithResult command) =>
+        adminGroup.MapGet("groups/group", (string groupId,
+            GroupService service) => service.GetGroup(groupId));
+
+        adminGroup.MapPost("groups/create", Ok<CreateGroupResponse>
+        (ICommandHandlerWithResult<CreateGroupCommandWithResult, string> createGroupCommandHandler,
+            CreateGroupCommandWithResult command) =>
         {
             var id = createGroupCommandHandler.Handle(command);
-            var result = new GroupEndpoints.CreateGroupResponse(command.Name, id);
+            var result = new CreateGroupResponse(command.Name, id);
             return TypedResults.Ok(result);
         });
-        
+
         adminGroup.MapPost("groups/users/{userId}/group/{groupId}",
-            (ICommandHandler<AssignUserToGroupCommand> assignUserToGroupCommandHandler, 
+            (ICommandHandler<AssignUserToGroupCommand> assignUserToGroupCommandHandler,
                 [FromRoute] string userId,
                 [FromRoute] string groupId) =>
             {
                 assignUserToGroupCommandHandler.Handle(new AssignUserToGroupCommand(userId, groupId));
             });
-        
+
         return adminGroup;
     }
 }
+
+
+public record CreateGroupResponse(string Name, string Id);
 
 public class CreateRole
 {

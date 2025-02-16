@@ -57,7 +57,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<Applicat
             dbContext.SaveChanges();
             return;
         }
-
+        
         var currentApproval = invoice.Approvals
             .OrderByDescending(x => x.StageLevel)
             .FirstOrDefault(x => x.Status == ApprovalStatus.AwaitingApprove);
@@ -82,7 +82,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<Applicat
             InvoiceId = sendInvoice.InvoiceId,
             StageLevel = nextStageLevel,
             Status = ApprovalStatus.AwaitingApprove,
-            CreationTime = DateTime.UtcNow,
+            CreationTime = DateTime.Now,
             DueDate = invoice.DueDate,
             LastApprovalId = currentApproval.Id
         };
@@ -210,7 +210,7 @@ public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<Applicat
         return dbContext.InvoiceApprovals
             .Where(x => x.UserId == userId 
                         && (x.Status == ApprovalStatus.AwaitingApprove
-                        || x.Status == ApprovalStatus.Rejected))
+                        || (x.Status == ApprovalStatus.Rejected && x.ConstantlyRejected == false)))
             .Join(dbContext.Invoices,
                 approval => approval.InvoiceId,
                 invoice => invoice.Id,
@@ -235,10 +235,11 @@ public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<Applicat
             .ToList();
     }
 
-    public IEnumerable<InvoiceApprovalDto> GetAcceptedApprovals(string userId)
+    public IEnumerable<InvoiceApprovalDto> GetHistoricalApprovals(string userId)
     {
         return dbContext.InvoiceApprovals
-            .Where(x => x.UserId == userId && x.Status == ApprovalStatus.Approved)
+            .Where(x => x.UserId == userId)
+            .Where(x => (x.ConstantlyRejected && x.Status == ApprovalStatus.Rejected) || x.Status == ApprovalStatus.Approved)
             .Join(dbContext.Invoices,
                 approval => approval.InvoiceId,
                 invoice => invoice.Id,
@@ -444,12 +445,12 @@ public class ApprovalService(TurnoverMeDbContext dbContext, UserManager<Applicat
     {
         return new InvoiceApprovalHistory()
         {
-            Executor = invoiceApproval.ApproverName,
+            Executor = "Kancelaria",
             CreationTime = invoiceApproval.CreationTime,
-            IsAccepted = invoiceApproval.Status == ApprovalStatus.Approved,
-            ExecutionTime = null,
+            IsAccepted = false,
+            ExecutionTime = invoiceApproval.CreationTime,
             StageName = invoice.Workflow?.Stages.FirstOrDefault(x => x.Level == invoiceApproval.StageLevel)?.Name,
-            Note = invoiceApproval.Note,
+            Note = "Wysłanie faktury w obieg do zatwierdzenia",
             InvoiceId = invoiceApproval.InvoiceId,
             Status = ApprovalStatus.AwaitingApprove
         };

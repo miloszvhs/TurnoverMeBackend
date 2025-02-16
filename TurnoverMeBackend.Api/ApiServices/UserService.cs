@@ -8,7 +8,7 @@ using TurnoverMeBackend.Infrastructure.DAL;
 namespace TurnoverMeBackend.Api.ApiServices;
 
 public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationUser> userManager,
-    GroupRepositoryy groupRepository,
+    UserGroupRepository userGroupRepository,
     RoleManager<IdentityRole> roleManager)
     : BaseService(dbContext)
 {
@@ -30,7 +30,7 @@ public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationU
                 Email = user.Email,
                 GroupName = string.IsNullOrWhiteSpace(user.GroupId) 
                     ? null 
-                    : groupRepository.Get(user.GroupId)?.Name ?? null,
+                    : userGroupRepository.Get(user.GroupId)?.Name ?? null,
                 GroupId = user.GroupId,
                 Role =  role,
                 RoleId = roleManager.FindByNameAsync(role).GetAwaiter().GetResult()?.Id
@@ -147,7 +147,7 @@ public class UserService(TurnoverMeDbContext dbContext, UserManager<ApplicationU
     }
 }
 
-public class GroupRepositoryy(TurnoverMeDbContext context)
+public class UserGroupRepository(TurnoverMeDbContext context)
 {
     public Group Get(string id)
     {

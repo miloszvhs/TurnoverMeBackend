@@ -54,10 +54,8 @@ public class Program
 
         app.AddCustomIdentityEndpoints();
         app.MapInvoiceEndpoints().RequireAuthorization();
-        app.AddChambersEndpoints().RequireAuthorization();
         app.AddWorkflowEndpoints().RequireAuthorization();
-        app.MapInvoiceApprovalEndpoints().RequireAuthorization();
-        app.MapGroupEndpoints().RequireAuthorization();
+        app.MapInvoiceApprovalEndpoints();//.RequireAuthorization();
         app.AddAdminEndpoints().RequireAuthorization();
 
         app.Run();

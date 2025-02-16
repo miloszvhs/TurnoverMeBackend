@@ -15,6 +15,6 @@ public static class ModuleInitializer
         foreach (var serviceType in serviceTypes)
             services.AddScoped(serviceType);
 
-        services.AddScoped<GroupRepositoryy>();
+        services.AddScoped<UserGroupRepository>();
     }
 }
